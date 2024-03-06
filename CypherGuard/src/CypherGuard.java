@@ -15,6 +15,12 @@
 // This Script is the main script. It sets the window variables and references the first pane of the app. 
 //************************************************************************
 
+/*
+ * For Windows:
+ * "vmArgs": "--module-path \"C:\/Program Files\/Java\/javafx-sdk-21.0.2\/lib\" --add-modules javafx.controls,javafx.fxml"
+ * This line may need to be added to the launch.json if it's not there already to use JFX libraries
+*/
+
 import java.util.HashMap;
 
 import javafx.application.Application;
@@ -38,14 +44,17 @@ public class CypherGuard extends Application {
         primaryStage.setResizable(false); // Set the stage (window) to be non-resizable
         primaryStage.show(); // Show stage
 
-        // Calling SavePassword to encrypt all the Data in TestData.java and save it to a text file.
+        // Calling SavePassword to encrypt all the Data in TestData.java and save it to
+        // a text file.
         SavePassword accountSaver = new SavePassword();
         TestData testData = new TestData(); // Probably Temporary
-        for (HashMap<String, String> account : testData.accounts) { // For every HashMap in the accounts array in TestData.java
+        for (HashMap<String, String> account : testData.accounts) { // For every HashMap in the accounts array in
+                                                                    // TestData.java
             accountSaver.savePasswordToFile(account); // Save the Hashmap
         }
 
-        // Then getAccountCredentials() in SavePassword.java to load data from the text file with the account name.
+        // Then getAccountCredentials() in SavePassword.java to load data from the text
+        // file with the account name.
         SavePassword accountRetriever = new SavePassword();
         try {
             // Get the HashMap of the account
