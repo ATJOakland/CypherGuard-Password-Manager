@@ -209,7 +209,7 @@ public class SavePassword {
     // Uses isWindows() and isMac() to check OS and decide the file path.
     private static void filePathDecider() {
         if (isWindows()) {
-            filePath = "lib\\passwordFile";
+            filePath = "CypherGuard\\lib\\passwordFile";
         } else if (isMac()) {
             filePath = "lib/passwordFile";
         } else {
