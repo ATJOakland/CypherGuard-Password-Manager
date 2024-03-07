@@ -78,6 +78,7 @@ public class CypherGuard extends Application {
 
     // Non Java-FX Launcher fallback
     public static void main(String[] args) {
+        Database.initializeDatabase();
         launch(args);
     }
 }
