@@ -1,0 +1,22 @@
+/* Add styles for your buttons */
+.button {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+}
+
+.button#viewButton {
+    -fx-background-color: #008CBA;
+}
+
+.button#saveNoteButton {
+    -fx-background-color: #f44336;
+}
+
+.button#closeButton {
+    -fx-background-color: #555555;
+}
+
+/* Add styles for your background */
+.main-pane {
+    -fx-background-color: #091232;
+}
