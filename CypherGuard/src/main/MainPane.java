@@ -164,66 +164,84 @@ public class MainPane extends GridPane {
             // Hide the current stage
             Stage currentStage = (Stage) btnProfile.getScene().getWindow();
             currentStage.hide();
-
+        
             // Create a new stage for the profile window
             Stage profileStage = new Stage();
-
+        
             // Icon
             Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
             profileStage.getIcons().add(icon);
-
+        
             // Create a layout for the profile window
             VBox root = new VBox();
             root.setAlignment(Pos.CENTER);
             root.setPadding(new Insets(20));
-
+        
             // Create a scene and set it to the profile stage
             Scene profileScene = new Scene(root, 600, 400);
             profileStage.setScene(profileScene);
-
+        
             // Load CSS styles
             profileScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
-
+        
             // Set the title of the profile window
             profileStage.setTitle("CypherGuard - Profile View");
-
-            // Show the profile window
-            profileStage.show();
-
-            // Create a label for the profile title
+        
+            // Labels for title and user info
             Label lblProfileTitle = new Label("Welcome to Your Profile");
-            lblProfileTitle.getStyleClass().add("login-title");
-
-            // Create labels for user information
             Label lblUsername = new Label("Username: user123");
             Label lblEmail = new Label("Email: user123@example.com");
             Label lblMembershipStatus = new Label("Membership Status: Free-Trial");
+            Label lblUserPassword = new Label("Password: ********");
+        
+            // Styling for labels
+            lblProfileTitle.getStyleClass().add("login-title");
+            lblUsername.getStyleClass().add("profile-label");
+            lblEmail.getStyleClass().add("profile-label");
+            lblMembershipStatus.getStyleClass().add("profile-label");
+            lblUserPassword.getStyleClass().add("profile-label");
 
             // Create buttons for profile actions
             Button btnChangePassword = new Button("Change Password");
             Button btnEditProfile = new Button("Edit Profile");
             Button btnLogout = new Button("Logout");
-
+        
             // Set styles for buttons
             btnChangePassword.getStyleClass().add("action-button");
             btnEditProfile.getStyleClass().add("action-button");
             btnLogout.getStyleClass().add("action-button");
-
+        
             // Create a back button
             Button btnBack = new Button("Back");
             btnBack.getStyleClass().add("back-button");
             btnBack.setOnAction(backEvent -> {
                 // Close the profile stage
                 profileStage.close();
-
+        
                 // Show the previous stage
                 currentStage.show();
             });
+        
+            // Create VBox for user info
+            VBox userInfoBox = new VBox(20);
+            userInfoBox.setAlignment(Pos.BASELINE_LEFT);
+            userInfoBox.getChildren().addAll(lblUsername, lblEmail, lblUserPassword, lblMembershipStatus);
+
+            // Create VBox for user actions
+            VBox userActionBox = new VBox(20);
+            userActionBox.setAlignment(Pos.BASELINE_CENTER);
+            userActionBox.getChildren().addAll(btnChangePassword, btnEditProfile, btnLogout, btnBack);
+
+            // Create an HBox to hold user info and user actions side by side
+            HBox profileContentHBox = new HBox(20);
+            profileContentHBox.getChildren().addAll(userInfoBox, userActionBox);
 
             // Add components to the root layout
-            root.getChildren().addAll(lblProfileTitle, lblUsername, lblEmail, lblMembershipStatus,
-            btnChangePassword, btnEditProfile, btnLogout, btnBack);
-        });
+            root.getChildren().addAll(lblProfileTitle, profileContentHBox);
+        
+            // Show the profile window
+            profileStage.show();
+        }); 
 
         // Settings Page
         btnSettings.setOnAction(e -> {

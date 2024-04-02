@@ -104,4 +104,11 @@
 
 .login-title {
     -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-padding: 0 0 20px 0;
+}
+
+.profile-label {
+    -fx-text-fill: white;
 }
