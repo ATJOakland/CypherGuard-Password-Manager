@@ -154,7 +154,7 @@ public class MainPane extends GridPane {
             
             // Set preferred width for userPassword TextField
             userPassword.setPrefWidth(100);
-            root.setPadding(new Insets(150)); // Set padding for the VBox
+            root.setPadding(new Insets(100));
             // Add the components to the root layout
             root.getChildren().addAll(radioButtonsBox, userName, userPassword, buttonBox);
         });        
