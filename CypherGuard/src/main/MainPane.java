@@ -47,7 +47,7 @@ public class MainPane extends GridPane {
         Button btnLogin = new Button("Login/Create an Account");
         Button btnSavePassword = new Button("Save a Password");
         Button btnViewPassword = new Button("Look at Passwords");
-        Button btnSaveNote = new Button("Save a Note");
+        Button btnSaveNote = new Button("Settings");
         Button btnProfile = new Button("View Profile");
         Button btnClose = new Button("Close");
         
@@ -62,6 +62,7 @@ public class MainPane extends GridPane {
         // Button actions
         btnClose.setOnAction(e -> Platform.exit());
 
+        // Login Page
         btnLogin.setOnAction(e -> {
 
             // Hide the current stage
@@ -156,6 +157,52 @@ public class MainPane extends GridPane {
             // Add the components to the root layout
             root.getChildren().addAll(radioButtonsBox, userName, userPassword, buttonBox);
         });        
+
+        // Profile Page
+        btnProfile.setOnAction(e -> {
+            // Hide the current stage
+            Stage currentStage = (Stage) btnProfile.getScene().getWindow();
+            currentStage.hide();
+
+            // Create a new stage for the profile window
+            Stage profileStage = new Stage();
+
+            // Create a layout for the profile window
+            VBox root = new VBox();
+            root.setAlignment(Pos.CENTER);
+            root.setPadding(new Insets(20));
+
+            // Create a scene and set it to the profile stage
+            Scene profileScene = new Scene(root, 600, 400);
+            profileStage.setScene(profileScene);
+
+            // Load CSS styles
+            profileScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
+
+            // Set the title of the profile window
+            profileStage.setTitle("CypherGuard - Profile View");
+
+            // Show the profile window
+            profileStage.show();
+
+            // Create a label for the profile title
+            Label lblProfileTitle = new Label("Welcome to Your Profile");
+            lblProfileTitle.getStyleClass().add("login-title");
+
+            // Create a back button
+            Button btnBack = new Button("Back");
+            btnBack.getStyleClass().add("back-button");
+            btnBack.setOnAction(backEvent -> {
+                // Close the profile stage
+                profileStage.close();
+
+                // Show the previous stage
+                currentStage.show();
+            });
+
+    // Add components to the root layout
+    root.getChildren().addAll(lblProfileTitle, btnBack);
+});
 
         // Set a fixed width for all buttons
         double buttonWidth = 200; // Adjust as needed
