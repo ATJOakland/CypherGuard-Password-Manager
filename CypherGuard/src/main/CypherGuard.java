@@ -35,9 +35,15 @@ public class CypherGuard extends Application {
     @SuppressWarnings("unchecked")
     @Override
     public void start(Stage primaryStage) throws Exception {
-        MainPane mainPane = new MainPane(); // An instance of the main pane script
+        MainPane mainPane = new MainPane(primaryStage); // An instance of the main pane script
 
-        Scene scene = new Scene(mainPane, 1280, 720); // Sets a new scene with 1280x720 dimensions
+        Scene scene = new Scene(mainPane, 1200, 720);
+
+        try {
+            scene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
 
         // Main window variables
         primaryStage.setTitle("CypherGuard - Password Manager"); // Window title
