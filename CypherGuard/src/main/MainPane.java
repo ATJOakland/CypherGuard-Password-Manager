@@ -30,7 +30,6 @@ public class MainPane extends GridPane {
     public MainPane(Stage previousStage) {
 
         this.previousStage = previousStage;
-
         // Center vertically
         setAlignment(Pos.CENTER);
 
@@ -45,17 +44,15 @@ public class MainPane extends GridPane {
 
         // Buttons
         Button btnLogin = new Button("Login/Create an Account");
-        Button btnSavePassword = new Button("Save a Password");
-        Button btnViewPassword = new Button("Look at Passwords");
-        Button btnSaveNote = new Button("Settings");
+        Button btnViewPasswords = new Button("Save or View Passwords");
+        Button btnSettings = new Button("Settings");
         Button btnProfile = new Button("View Profile");
         Button btnClose = new Button("Close");
         
         // CSS Styling for buttons
         btnLogin.getStyleClass().add("login-button");
-        btnSavePassword.getStyleClass().add("action-button");
-        btnViewPassword.getStyleClass().add("action-button");
-        btnSaveNote.getStyleClass().add("action-button");
+        btnViewPasswords.getStyleClass().add("action-button");
+        btnSettings.getStyleClass().add("action-button");
         btnClose.getStyleClass().add("close-button");
         btnProfile.getStyleClass().add("action-button");
 
@@ -72,6 +69,10 @@ public class MainPane extends GridPane {
             // Create a new stage for the login window
             Stage loginStage = new Stage();
 
+            // Icon
+            Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
+            loginStage.getIcons().add(icon);
+
             Label lblLoginTitle = new Label("Login or Create a New Account Below");
         
             // Create a layout for the login window
@@ -80,7 +81,7 @@ public class MainPane extends GridPane {
             root.setPadding(new Insets(20));
 
             // Create a scene and set it to the login stage
-            Scene loginScene = new Scene(root, 600, 400); // Adjust width and height as needed
+            Scene loginScene = new Scene(root, 600, 400);
             loginStage.setScene(loginScene);
 
             loginScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
@@ -167,6 +168,10 @@ public class MainPane extends GridPane {
             // Create a new stage for the profile window
             Stage profileStage = new Stage();
 
+            // Icon
+            Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
+            profileStage.getIcons().add(icon);
+
             // Create a layout for the profile window
             VBox root = new VBox();
             root.setAlignment(Pos.CENTER);
@@ -189,6 +194,21 @@ public class MainPane extends GridPane {
             Label lblProfileTitle = new Label("Welcome to Your Profile");
             lblProfileTitle.getStyleClass().add("login-title");
 
+            // Create labels for user information
+            Label lblUsername = new Label("Username: user123");
+            Label lblEmail = new Label("Email: user123@example.com");
+            Label lblMembershipStatus = new Label("Membership Status: Free-Trial");
+
+            // Create buttons for profile actions
+            Button btnChangePassword = new Button("Change Password");
+            Button btnEditProfile = new Button("Edit Profile");
+            Button btnLogout = new Button("Logout");
+
+            // Set styles for buttons
+            btnChangePassword.getStyleClass().add("action-button");
+            btnEditProfile.getStyleClass().add("action-button");
+            btnLogout.getStyleClass().add("action-button");
+
             // Create a back button
             Button btnBack = new Button("Back");
             btnBack.getStyleClass().add("back-button");
@@ -200,17 +220,117 @@ public class MainPane extends GridPane {
                 currentStage.show();
             });
 
-    // Add components to the root layout
-    root.getChildren().addAll(lblProfileTitle, btnBack);
-});
+            // Add components to the root layout
+            root.getChildren().addAll(lblProfileTitle, lblUsername, lblEmail, lblMembershipStatus,
+            btnChangePassword, btnEditProfile, btnLogout, btnBack);
+        });
+
+        // Settings Page
+        btnSettings.setOnAction(e -> {
+            // Hide the current stage
+            Stage currentStage = (Stage) btnSettings.getScene().getWindow();
+            currentStage.hide();
+
+            // Create a new stage for the settings window
+            Stage settingsStage = new Stage();
+
+            // Icon
+            Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
+            settingsStage.getIcons().add(icon);
+
+            // Create a layout for the settings window
+            VBox root = new VBox();
+            root.setAlignment(Pos.CENTER);
+            root.setPadding(new Insets(20));
+
+            // Create a scene and set it to the settings stage
+            Scene settingsScene = new Scene(root, 600, 400);
+            settingsStage.setScene(settingsScene);
+
+            // Load CSS styles
+            settingsScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
+
+            // Set the title of the settings window
+            settingsStage.setTitle("CypherGuard - Settings");
+
+            // Show the settings window
+            settingsStage.show();
+
+            // Create a label for the settings title
+            Label lblSettingsTitle = new Label("Welcome to Settings");
+            lblSettingsTitle.getStyleClass().add("login-title");
+
+            // Create a back button
+            Button btnBack = new Button("Back");
+            btnBack.getStyleClass().add("back-button");
+            btnBack.setOnAction(backEvent -> {
+                // Close the settings stage
+                settingsStage.close();
+
+                // Show the previous stage
+                currentStage.show();
+            });
+
+            // Add components to the root layout
+            root.getChildren().addAll(lblSettingsTitle, btnBack);
+        });
+
+        // View Passwords Page
+        btnViewPasswords.setOnAction(e -> {
+            // Hide the current stage
+            Stage currentStage = (Stage) btnViewPasswords.getScene().getWindow();
+            currentStage.hide();
+
+            // Create a new stage for the view passwords window
+            Stage viewPasswordsStage = new Stage();
+
+            // Icon
+            Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
+            viewPasswordsStage.getIcons().add(icon);
+
+            // Create a layout for the view passwords window
+            VBox root = new VBox();
+            root.setAlignment(Pos.CENTER);
+            root.setPadding(new Insets(20));
+
+            // Create a scene and set it to the view passwords stage
+            Scene viewPasswordsScene = new Scene(root, 600, 400);
+            viewPasswordsStage.setScene(viewPasswordsScene);
+
+            // Load CSS styles
+            viewPasswordsScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
+
+            // Set the title of the view passwords window
+            viewPasswordsStage.setTitle("CypherGuard - View Passwords");
+
+            // Show the view passwords window
+            viewPasswordsStage.show();
+
+            // Create a label for the view passwords title
+            Label lblViewPasswordsTitle = new Label("View Passwords");
+            lblViewPasswordsTitle.getStyleClass().add("login-title");
+
+            // Create a back button
+            Button btnBack = new Button("Back");
+            btnBack.getStyleClass().add("back-button");
+            btnBack.setOnAction(backEvent -> {
+                // Close the view passwords stage
+                viewPasswordsStage.close();
+
+                // Show the previous stage
+                currentStage.show();
+            });
+
+            // Add components to the root layout
+            root.getChildren().addAll(lblViewPasswordsTitle, btnBack);
+        });
 
         // Set a fixed width for all buttons
         double buttonWidth = 200; // Adjust as needed
 
         // Set the width for each button
-        btnSavePassword.setMinWidth(buttonWidth);
-        btnViewPassword.setMinWidth(buttonWidth);
-        btnSaveNote.setMinWidth(buttonWidth);
+        btnViewPasswords.setMinWidth(buttonWidth);
+        btnSettings.setMinWidth(buttonWidth);
         btnLogin.setMinWidth(buttonWidth);
         btnClose.setMinWidth(buttonWidth);
         btnProfile.setMinWidth(buttonWidth);
@@ -218,7 +338,7 @@ public class MainPane extends GridPane {
         // Action Button Pane Design
         VBox actionbuttonBox = new VBox(20); 
         actionbuttonBox.setAlignment(Pos.CENTER);
-        actionbuttonBox.getChildren().addAll(btnSavePassword, btnViewPassword, btnSaveNote);
+        actionbuttonBox.getChildren().addAll(btnViewPasswords, btnSettings);
 
         // Header Button Pane Design
         VBox HeaderButtonBox = new VBox(20);

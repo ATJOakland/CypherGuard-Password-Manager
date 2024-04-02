@@ -26,6 +26,7 @@ import java.util.HashMap;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import java.io.IOException;
 
@@ -38,6 +39,9 @@ public class CypherGuard extends Application {
         MainPane mainPane = new MainPane(primaryStage); // An instance of the main pane script
 
         Scene scene = new Scene(mainPane, 1200, 720);
+        
+        Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
+        primaryStage.getIcons().add(icon);
 
         try {
             scene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
