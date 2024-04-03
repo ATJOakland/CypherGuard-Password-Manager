@@ -6,6 +6,7 @@ import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
@@ -335,6 +336,25 @@ public class MainPane extends GridPane {
             root.setAlignment(Pos.CENTER);
             root.setPadding(new Insets(20));
 
+            // Save user inputted data
+            Button btnSave = new Button("Save Password");
+            btnSave.getStyleClass().add("action-button");
+            
+            // Text Fields
+            TextField txtAddedUserName = new TextField();
+            txtAddedUserName.setPromptText("Enter your Username...");
+
+            TextField txtAddedPassword = new TextField();
+            txtAddedPassword.setPromptText("Enter your Password...");
+
+            TextField txtWebsiteName = new TextField();
+            txtWebsiteName.setPromptText("Enter the Wesbite's name...");
+
+            // Assigning styles to text field
+            txtAddedUserName.getStyleClass().add("text-field");
+            txtAddedPassword.getStyleClass().add("text-field");
+            txtWebsiteName.getStyleClass().add("text-field");
+
             // Create a scene and set it to the view passwords stage
             Scene viewPasswordsScene = new Scene(root, 600, 400);
             viewPasswordsStage.setScene(viewPasswordsScene);
@@ -352,6 +372,28 @@ public class MainPane extends GridPane {
             Label lblViewPasswordsTitle = new Label("View Passwords");
             lblViewPasswordsTitle.getStyleClass().add("login-title");
 
+            btnSave.setOnAction(event -> {
+
+                String website = txtWebsiteName.getText();
+                String appUsername = txtAddedUserName.getText();
+                String appPassword = txtAddedPassword.getText();
+            
+                try {
+                    String yourAppUsername = "testUser2"; // This should be an actual username from 'users' table
+                    Database.addPassword(yourAppUsername, website, appPassword);
+            
+                    // Show success alert
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Credentials saved successfully!");
+                    alert.showAndWait();
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                    // Show error alert
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to save credentials.");
+                    alert.showAndWait();
+                }
+            });
+            
+
             // Create a back button
             Button btnBack = new Button("Back");
             btnBack.getStyleClass().add("back-button");
@@ -364,7 +406,7 @@ public class MainPane extends GridPane {
             });
 
             // Add components to the root layout
-            root.getChildren().addAll(lblViewPasswordsTitle, btnBack);
+            root.getChildren().addAll(lblViewPasswordsTitle, txtAddedUserName, txtAddedPassword, txtWebsiteName, btnSave, btnBack);
         });
 
         // Set a fixed width for all buttons
