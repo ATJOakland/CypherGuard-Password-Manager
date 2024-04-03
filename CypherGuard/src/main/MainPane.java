@@ -7,21 +7,16 @@ import javafx.geometry.Pos;
 import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
-import javafx.scene.text.Font;
 import javafx.stage.Stage;
-import java.io.File;
 
 public class MainPane extends GridPane {
 
@@ -373,7 +368,7 @@ public class MainPane extends GridPane {
         });
 
         // Set a fixed width for all buttons
-        double buttonWidth = 200; // Adjust as needed
+        double buttonWidth = 200;
 
         // Set the width for each button
         btnViewPasswords.setMinWidth(buttonWidth);
