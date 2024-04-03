@@ -189,10 +189,10 @@ public class MainPane extends GridPane {
         
             // Labels for title and user info
             Label lblProfileTitle = new Label("Welcome to Your Profile");
-            Label lblUsername = new Label("Username: user123");
-            Label lblEmail = new Label("Email: user123@example.com");
+            Label lblUsername = new Label("Username: KanyeBest123");
+            Label lblEmail = new Label("Email: KanyeBest123@gmail.com");
             Label lblMembershipStatus = new Label("Membership Status: Free-Trial");
-            Label lblUserPassword = new Label("Password: ********");
+            Label lblUserPassword = new Label("Password: ****************");
         
             // Styling for labels
             lblProfileTitle.getStyleClass().add("login-title");
@@ -204,12 +204,14 @@ public class MainPane extends GridPane {
             // Create buttons for profile actions
             Button btnChangePassword = new Button("Change Password");
             Button btnEditProfile = new Button("Edit Profile");
-            Button btnLogout = new Button("Logout");
+
+            // Radio Button for show Password
+            RadioButton rbtnShowPassword = new RadioButton("Show Password       ");
+            rbtnShowPassword.getStyleClass().add("show-password-radio-button");
         
             // Set styles for buttons
             btnChangePassword.getStyleClass().add("action-button");
             btnEditProfile.getStyleClass().add("action-button");
-            btnLogout.getStyleClass().add("action-button");
         
             // Create a back button
             Button btnBack = new Button("Back");
@@ -221,24 +223,51 @@ public class MainPane extends GridPane {
                 // Show the previous stage
                 currentStage.show();
             });
-        
+
+            // Show Password
+            rbtnShowPassword.setOnAction(event -> {
+                // Check if the radio button is selected
+                if (rbtnShowPassword.isSelected()) {
+                    // If selected, show the password
+                    lblUserPassword.setText("Password: actual_password");
+                } else {
+                    // If not selected, hide the password
+                    lblUserPassword.setText("Password: ****************");
+                }
+            });
+            
+            // Set a fixed width for all buttons and labels
+            double buttonWidth = 150;
+            double labelWidth = 200;
+
+            // Set the width for each button
+            btnEditProfile.setMinWidth(buttonWidth);
+            btnChangePassword.setMinWidth(buttonWidth);
+            btnBack.setMinWidth(buttonWidth);
+
+            // Set Standard width for each profile label
+            lblUsername.setMinWidth(labelWidth);
+            lblEmail.setMinWidth(labelWidth);
+            lblUserPassword.setMinWidth(labelWidth);
+            lblMembershipStatus.setMinWidth(labelWidth);
+
             // Create VBox for user info
             VBox userInfoBox = new VBox(20);
-            userInfoBox.setAlignment(Pos.BASELINE_LEFT);
             userInfoBox.getChildren().addAll(lblUsername, lblEmail, lblUserPassword, lblMembershipStatus);
+            userInfoBox.getStyleClass().add("profile-info-container");
 
             // Create VBox for user actions
             VBox userActionBox = new VBox(20);
-            userActionBox.setAlignment(Pos.BASELINE_CENTER);
-            userActionBox.getChildren().addAll(btnChangePassword, btnEditProfile, btnLogout, btnBack);
+            userActionBox.getChildren().addAll(rbtnShowPassword, btnChangePassword, btnEditProfile, btnBack);
 
             // Create an HBox to hold user info and user actions side by side
             HBox profileContentHBox = new HBox(20);
             profileContentHBox.getChildren().addAll(userInfoBox, userActionBox);
+            profileContentHBox.setAlignment(Pos.CENTER); // Align center
 
             // Add components to the root layout
             root.getChildren().addAll(lblProfileTitle, profileContentHBox);
-        
+
             // Show the profile window
             profileStage.show();
         }); 

@@ -45,13 +45,13 @@
 }
 
 .radio-button .radio-text {
-    -fx-padding: 0 10px; /* Add space on the right side of the text */
+    -fx-padding: 0 10px;
 }
 
 .radio-button .radio-circle {
-    -fx-background-color: rgb(15, 108, 158); /* Default background color */
-    -fx-border-radius: 50%; /* Circle shape */
-    -fx-padding: 2px; /* Adjust as needed */
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-border-radius: 50%;
+    -fx-padding: 2px;
 }
 
 /* Radio Button when selected */
@@ -116,5 +116,54 @@
 }
 
 .profile-label {
+    -fx-text-fill: black;
+    -fx-padding: 10px;
+    -fx-background-color: #ddd;
+    -fx-background-radius: 30px;
+    -fx-font-weight: bold;
+}
+
+.profile-info-container {
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-background-radius: 30px;
+    -fx-padding: 20px;
+}
+
+.show-password-radio-button {
+    -fx-padding: 10px;
+    -fx-alignment: center;
+    -fx-background-color: #535353;
+    -fx-text-fill: #929292;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.show-password-radio-button .radio-text {
+    -fx-padding: 0 10px;
+}
+
+.show-password-radio-button .radio-circle {
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-border-radius: 50%;
+    -fx-padding: 2px;
+}
+
+.show-password-radio-button:selected {
+    -fx-background-color: #4CAF50;
     -fx-text-fill: white;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.show-password-radio-button:hover {
+    -fx-background-color: #2b652d;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.show-password-radio-button:selected:hover {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
 }
