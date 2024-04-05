@@ -1,10 +1,13 @@
 package main;
 
+import javax.swing.text.View;
+
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
+import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -20,7 +23,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainPane extends GridPane {
-
     private Stage previousStage;
 
     public MainPane(Stage previousStage) {
@@ -57,102 +59,9 @@ public class MainPane extends GridPane {
 
         // Login Page
         btnLogin.setOnAction(e -> {
-
-            // Hide the current stage
-            Stage currentStage = (Stage) btnLogin.getScene().getWindow();
-            currentStage.hide();
-        
-            // Create a new stage for the login window
-            Stage loginStage = new Stage();
-
-            // Icon
-            Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
-            loginStage.getIcons().add(icon);
-
-            Label lblLoginTitle = new Label("Login or Create a New Account Below");
-        
-            // Create a layout for the login window
-            VBox root = new VBox(lblLoginTitle);
-            root.setAlignment(Pos.CENTER);
-            root.setPadding(new Insets(20));
-
-            // Create a scene and set it to the login stage
-            Scene loginScene = new Scene(root, 600, 400);
-            loginStage.setScene(loginScene);
-
-            loginScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
-            
-            // Set the title of the login window
-            loginStage.setTitle("CypherGuard - Login");
-        
-            // Show the login window
-            loginStage.show();
-            
-            // Create a ToggleGroup
-            ToggleGroup toggleGroup = new ToggleGroup();
-
-            // Create Account radio button
-            RadioButton rbtnCreate = new RadioButton("Create Account      "); // DO NOT REMOVE SPACES
-            rbtnCreate.setToggleGroup(toggleGroup); 
-            rbtnCreate.setSelected(false);
-
-            // Login radio button
-            RadioButton rbtnLogin = new RadioButton("Login      "); // DO NOT REMOVE SPACES
-            rbtnLogin.setToggleGroup(toggleGroup); 
-            rbtnLogin.setSelected(true);
-
-            TextField userName = new TextField();
-            userName.setPromptText("Enter your Username...");
-            userName.setPrefWidth(100);
-            TextField userPassword = new TextField();
-            userPassword.setPromptText("Enter your Password...");
-
-            // Create a back button
-            Button btnBack = new Button("Back");
-            Button btnLoginUser = new Button("Login");
-
-            // Styling for login pane buttons
-            btnBack.getStyleClass().add("back-button");
-            rbtnCreate.getStyleClass().add("radio-button");
-            rbtnLogin.getStyleClass().add("radio-button");
-            userName.getStyleClass().add("text-field");
-            userPassword.getStyleClass().add("text-field");
-            btnLoginUser.getStyleClass().add("login-button");
-            lblLoginTitle.getStyleClass().add("login-title");
-
-            btnBack.setOnAction(backEvent -> {
-                // Close the login stage
-                loginStage.close();
-        
-                // Show the previous stage
-                currentStage.show();
-            });
-        
-            // Create an HBox for radio buttons
-            HBox radioButtonsBox = new HBox(20); 
-            radioButtonsBox.setAlignment(Pos.CENTER); 
-
-            // Create an HBox for the login and back buttons
-            HBox buttonBox = new HBox(20); 
-            buttonBox.setAlignment(Pos.CENTER);
-            buttonBox.getChildren().addAll(btnLoginUser, btnBack);
-
-            // Add radio buttons to the HBox
-            radioButtonsBox.getStyleClass().add("radio-buttons-box");
-            radioButtonsBox.getChildren().addAll(rbtnLogin, rbtnCreate);
-            HBox.setMargin(radioButtonsBox, new Insets(20, 0, 0, 0));
-
-            // Add spacing between elements
-            VBox.setMargin(userName, new Insets(40, 0, 10, 0)); 
-            VBox.setMargin(userPassword, new Insets(10, 0, 40, 0)); 
-            VBox.setMargin(btnLoginUser, new Insets(0, 5, 10, 0)); 
-            VBox.setMargin(btnBack, new Insets(0, 0, 10, 5)); 
-            
-            // Set preferred width for userPassword TextField
-            userPassword.setPrefWidth(100);
-            root.setPadding(new Insets(100));
-            // Add the components to the root layout
-            root.getChildren().addAll(radioButtonsBox, userName, userPassword, buttonBox);
+            UserAuthentication userAuthentication = new UserAuthentication(previousStage, previousStage.getScene());
+            Scene userAuthenticationScene = new Scene(userAuthentication, 1200, 720);
+            previousStage.setScene(userAuthenticationScene);
         });        
 
         // Profile Page
@@ -320,93 +229,9 @@ public class MainPane extends GridPane {
 
         // View Passwords Page
         btnViewPasswords.setOnAction(e -> {
-            // Hide the current stage
-            Stage currentStage = (Stage) btnViewPasswords.getScene().getWindow();
-            currentStage.hide();
-
-            // Create a new stage for the view passwords window
-            Stage viewPasswordsStage = new Stage();
-
-            // Icon
-            Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
-            viewPasswordsStage.getIcons().add(icon);
-
-            // Create a layout for the view passwords window
-            VBox root = new VBox();
-            root.setAlignment(Pos.CENTER);
-            root.setPadding(new Insets(20));
-
-            // Save user inputted data
-            Button btnSave = new Button("Save Password");
-            btnSave.getStyleClass().add("action-button");
-            
-            // Text Fields
-            TextField txtAddedUserName = new TextField();
-            txtAddedUserName.setPromptText("Enter your Username...");
-
-            TextField txtAddedPassword = new TextField();
-            txtAddedPassword.setPromptText("Enter your Password...");
-
-            TextField txtWebsiteName = new TextField();
-            txtWebsiteName.setPromptText("Enter the Wesbite's name...");
-
-            // Assigning styles to text field
-            txtAddedUserName.getStyleClass().add("text-field");
-            txtAddedPassword.getStyleClass().add("text-field");
-            txtWebsiteName.getStyleClass().add("text-field");
-
-            // Create a scene and set it to the view passwords stage
-            Scene viewPasswordsScene = new Scene(root, 600, 400);
-            viewPasswordsStage.setScene(viewPasswordsScene);
-
-            // Load CSS styles
-            viewPasswordsScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
-
-            // Set the title of the view passwords window
-            viewPasswordsStage.setTitle("CypherGuard - View Passwords");
-
-            // Show the view passwords window
-            viewPasswordsStage.show();
-
-            // Create a label for the view passwords title
-            Label lblViewPasswordsTitle = new Label("View Passwords");
-            lblViewPasswordsTitle.getStyleClass().add("login-title");
-
-            btnSave.setOnAction(event -> {
-
-                String website = txtWebsiteName.getText();
-                String appUsername = txtAddedUserName.getText();
-                String appPassword = txtAddedPassword.getText();
-            
-                try {
-                    String yourAppUsername = "testUser2"; // This should be an actual username from 'users' table
-                    Database.addPassword(yourAppUsername, website, appPassword);
-            
-                    // Show success alert
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Credentials saved successfully!");
-                    alert.showAndWait();
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                    // Show error alert
-                    Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to save credentials.");
-                    alert.showAndWait();
-                }
-            });
-            
-
-            // Create a back button
-            Button btnBack = new Button("Back");
-            btnBack.getStyleClass().add("back-button");
-            btnBack.setOnAction(backEvent -> {
-                // Close the view passwords stage
-                viewPasswordsStage.close();
-
-                // Show the previous stage
-                currentStage.show();
-            });
-
-            // Add components to the root layout
-            root.getChildren().addAll(lblViewPasswordsTitle, txtAddedUserName, txtAddedPassword, txtWebsiteName, btnSave, btnBack);
+            ViewAndSavePasswords viewAndSavePasswords = new ViewAndSavePasswords(previousStage, previousStage.getScene());
+            Scene viewAndSavePasswordsScene = new Scene(viewAndSavePasswords, 1200, 720);
+            previousStage.setScene(viewAndSavePasswordsScene);
         });
 
         // Set a fixed width for all buttons

@@ -38,8 +38,7 @@ public class Key {
     }
 
     //Authentication method
-    public static Boolean authenticate(String inputPassword, String masterPassword, String salt) 
-        throws NoSuchAlgorithmException, InvalidKeySpecException, NoSuchProviderException{
+    public static Boolean authenticate(String inputPassword, String masterPassword, String salt) {
 
         boolean authenticated = false;
         String hashedPassword = null;
