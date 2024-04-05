@@ -18,6 +18,7 @@ import java.nio.file.*;
 
 import org.junit.jupiter.api.Assertions;
 import main.Database;
+import main.UserSession;
 
 public class DatabaseTest {
 
@@ -35,6 +36,7 @@ public class DatabaseTest {
             CREATE TABLE IF NOT EXISTS passwords (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 user_id INTEGER NOT NULL,
+                username TEXT NOT NULL,
                 platform TEXT NOT NULL,
                 password TEXT NOT NULL,
                 FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
@@ -60,7 +62,7 @@ public class DatabaseTest {
             statement.executeUpdate(USERS_TABLE);
             statement.executeUpdate(PASSWORDS_TABLE);
             x = statement.executeUpdate("INSERT OR IGNORE INTO users (username, master_password, salt) VALUES ('testUser', 'testMaster', 'testSalt')");
-            y = statement.executeUpdate("INSERT OR IGNORE INTO passwords (user_id, platform, password) VALUES ((SELECT id FROM users WHERE username = 'testUser'), 'testPlatform', 'testPassword')");
+            y = statement.executeUpdate("INSERT OR IGNORE INTO passwords (user_id, platform, password, username) VALUES ((SELECT id FROM users WHERE username = 'testUser'), 'testPlatform', 'testPassword', 'testUsername')");
             //other tables/data as needed
             if (y > 0 && x > 0) {
                 System.out.println("Tables created successfully");
@@ -71,11 +73,24 @@ public class DatabaseTest {
         catch (SQLException e) {
             Assertions.fail("SQLException thrown: " + e.getMessage());
         }
+
+        UserSession.getInstance("testUser");
+
     }
 
     @AfterAll
     public static void tearDown() throws SQLException {
+        //Delete all data from the 'passwords' and 'users' table
+        try (Statement statement = connection.createStatement()) {
+            statement.executeUpdate("DELETE FROM passwords");
+            statement.executeUpdate("DELETE FROM users");
+        }
+        catch (SQLException e) {
+            Assertions.fail("SQLException thrown: " + e.getMessage());
+        }
+
         connection.close();
+        UserSession.endSession();
     }
 
     @Test
@@ -83,7 +98,7 @@ public class DatabaseTest {
     void testAddPassword() throws Exception {
         
         try{
-            Database.addPassword("testUser", "testPlatform2", "testPlatformPassword");
+            Database.addPassword("testUsername", "testPlatform2", "testPlatformPassword");
             PreparedStatement statement = connection.prepareStatement("SELECT password FROM passwords WHERE user_id = (SELECT id FROM users WHERE username = ?) AND platform = ?");
             statement.setString(1, "testUser");
             statement.setString(2, "testPlatform2");
@@ -102,15 +117,20 @@ public class DatabaseTest {
     void testCreateUser() {
 
         try {
-            Database.createUser("testUser2", "testMaster");
+            boolean result = Database.createUser("testUser2", "newTestMaster", "newTestSalt");
+            Assertions.assertTrue(result, "User should be created");
 
             //Verify user was created
             try (PreparedStatement statement = connection.prepareStatement("SELECT * FROM users WHERE username = ?")) {
                 statement.setString(1, "testUser2");
                 ResultSet resultSet = statement.executeQuery();
 
-                Assertions.assertTrue(resultSet.next(), "User should exist in database");
-                Assertions.assertEquals("testUser2", resultSet.getString("username"), "Username should be 'testUser2'");
+                if(resultSet.next()){
+                    Assertions.assertEquals("testUser2", resultSet.getString("username"), "Username should be 'testUser2'");
+                }
+                else {
+                    Assertions.fail("User not found in database");
+                }
             }
             catch (SQLException e) {
                 Assertions.fail("Exception thrown: " + e.getMessage());
@@ -125,13 +145,12 @@ public class DatabaseTest {
     @Order(8)
     void testDeletePassword() {
         try{
-            Database.deletePassword("testUser2", "testPlatform");
-            PreparedStatement statement = connection.prepareStatement("SELECT password FROM passwords WHERE user_id = (SELECT id FROM users WHERE username = ?) AND platform = ?");
-            statement.setString(1, "testUser2");
-            statement.setString(2, "testPlatform");
+            Database.deletePassword("testPlatform");
+            PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM passwords");
             ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
 
-            Assertions.assertFalse(resultSet.next(), "Password should not exist in database");
+            Assertions.assertEquals(0, resultSet.getInt(1), "There should be no rows in the password table");
         }
         catch (SQLException e) {
             Assertions.fail("SQLException thrown: " + e.getMessage());
@@ -142,18 +161,13 @@ public class DatabaseTest {
     @Order(9)
     void testDeleteUser() {
         try{
-            Database.deleteUser("testUser2");
+            Database.deleteUser("testUser");
 
-            PreparedStatement statement1 = connection.prepareStatement("SELECT * FROM users WHERE username = ?");
-            statement1.setString(1, "testUser2");
-            ResultSet resultSet1 = statement1.executeQuery();
-            Assertions.assertFalse(resultSet1.next(), "User should not exist in database");
+            PreparedStatement statement1 = connection.prepareStatement("SELECT COUNT(*) FROM users");
+            ResultSet resultSet = statement1.executeQuery();
+            resultSet.next();
 
-            PreparedStatement statement2 = connection.prepareStatement("SELECT password FROM passwords WHERE user_id = (SELECT id FROM users WHERE username = ?) AND platform = ?");
-            statement2.setString(1, "testUser2");
-            statement2.setString(2, "testPlatform");
-            ResultSet resultSet2 = statement2.executeQuery();
-            Assertions.assertFalse(resultSet2.next(), "Password should not exist in database");
+            Assertions.assertEquals(0, resultSet.getInt(1), "There should be no rows in the database");
         }
         catch (SQLException e) {
             Assertions.fail("SQLException thrown: " + e.getMessage());
@@ -170,8 +184,9 @@ public class DatabaseTest {
     @Test
     @Order(3)
     void testGetPasswordByUsername() {
-        String password = Database.getPasswordByUsername("testUser", "testPlatform");
-        Assertions.assertEquals("testPassword", password, "Password should match expected value");
+        String[] info = Database.getPlatformInfo("testPlatform");
+        Assertions.assertEquals("testPassword", info[1], "Password should match expected value");
+        Assertions.assertEquals("testUsername", info[0], "Username should match expected value");
     }
 
     @Test
@@ -196,7 +211,7 @@ public class DatabaseTest {
     @Order(7)
     void testUpdatePassword() {
         try{
-            Database.updatePassword("testUser", "testPlatform", "updatedPassword");
+            Database.updatePassword( "testPlatform", "updatedPassword");
             PreparedStatement statement = connection.prepareStatement("SELECT password FROM passwords WHERE user_id = (SELECT id FROM users WHERE username = ?) AND platform = ?");
             statement.setString(1, "testUser");
             statement.setString(2, "testPlatform");

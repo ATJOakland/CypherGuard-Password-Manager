@@ -14,10 +14,6 @@ import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
-import java.security.NoSuchAlgorithmException;
-import java.security.NoSuchProviderException;
-import java.security.spec.InvalidKeySpecException;
-
 public class UserAuthentication extends VBox{
 
     public UserAuthentication(Stage stage, Scene previousScene){
@@ -78,9 +74,10 @@ public class UserAuthentication extends VBox{
         btnLoginUser.setOnAction(loginEvent -> {
             String username = userName.getText();
             String password = userPassword.getText();
+            String salt = null;
 
             if (rbtnLogin.isSelected()) {
-                String salt = Database.getSalt(username);
+                salt = Database.getSalt(username);
                 String masterPassword = Database.getMaster(username);
 
                 boolean isValid = Key.authenticate(password, masterPassword, salt);
@@ -95,8 +92,15 @@ public class UserAuthentication extends VBox{
                 }
             }
             else if(rbtnCreate.isSelected()) {
-
-                boolean isCreated = Database.createUser(username, password);
+                try{
+                    //Generate salt and hash the master password
+                    salt = Key.generateSalt();
+                    password = Key.deriveKey(password, salt);
+                }
+                catch (Exception e) {
+                    System.out.println("Error generating salt: " + e.getMessage());
+                }
+                boolean isCreated = Database.createUser(username, password, salt);
                 if(isCreated){
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "Account created successfully!");
                     alert.showAndWait();

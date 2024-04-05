@@ -97,21 +97,18 @@ public class Database {
     }
 
     //Method to create a new user
-    public static boolean createUser(String username, String masterPassword) {
+    public static boolean createUser(String username, String hashedMasterPassword, String salt) {
 
         String query = "INSERT INTO users (username, master_password, salt) VALUES (?, ?, ?)";
         try (Connection conn = DriverManager.getConnection(DB_PATH);
             Statement stmt = conn.createStatement();
             PreparedStatement pstmt = conn.prepareStatement(query)) {
-            
-            String salt = Key.generateSalt();
-            String hashedPassword = Key.deriveKey(masterPassword, salt);
 
             //Enable SQLite foreign key contraints
             stmt.execute("PRAGMA foreign_keys = ON;");
 
             pstmt.setString(1, username);
-            pstmt.setString(2, hashedPassword);
+            pstmt.setString(2, hashedMasterPassword);
             pstmt.setString(3, salt);
             
             pstmt.executeUpdate();
@@ -232,7 +229,7 @@ public class Database {
 
     //Method to delete a user
     public static boolean deleteUser(String username){
-        String query = "DELETE FROM users WHERE user_id = (SELECT id FROM users WHERE username = ?)";
+        String query = "DELETE FROM users WHERE username = ?";
         try (Connection conn = DriverManager.getConnection(DB_PATH);
             Statement stmt = conn.createStatement();
             PreparedStatement pstmt = conn.prepareStatement(query)) {
