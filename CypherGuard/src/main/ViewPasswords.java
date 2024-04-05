@@ -51,7 +51,6 @@ public class ViewPasswords {
 
     public static void main(String[] args) {
         ViewPasswords viewPasswords = new ViewPasswords();
-        // Assume passwords are added elsewhere in your application
         viewPasswords.addPasswordEntry("Example Name", "example_username", "example_password");
         viewPasswords.displayPasswords();
     }
