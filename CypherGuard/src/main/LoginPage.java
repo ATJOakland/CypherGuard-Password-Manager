@@ -25,10 +25,6 @@ public class LoginPage extends VBox{
         return userOnline;
     }
 
-    public static void setUserstatus(boolean userOnline) {
-        LoginPage.userOnline = userOnline;
-    }
-
     private static boolean userOnline = false; // False initially
 
     public LoginPage(Stage stage, Scene previousScene){
@@ -136,11 +132,9 @@ public class LoginPage extends VBox{
                 if (isValid) {
                     UserSession.getInstance(username);
                     Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Now logged in as " + username + "!");
-                    setUserstatus(true);
                     alert.showAndWait();
                 } else {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Invalid username or password.");
-                    setUserstatus(false);
                     alert.showAndWait();
                 }
             }
@@ -156,12 +150,10 @@ public class LoginPage extends VBox{
                 boolean isCreated = Database.createUser(username, password, salt);
                 if(isCreated){
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "Account created successfully!");
-                    setUserstatus(true);
                     alert.showAndWait();
                 }
                 else {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to create account.");
-                    setUserstatus(false);
                     alert.showAndWait();
                 }
             }

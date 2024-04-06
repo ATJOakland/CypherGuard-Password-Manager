@@ -1,13 +1,17 @@
 package main;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.scene.control.Alert;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+
+import java.util.List;
+import java.util.Map;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
@@ -33,9 +37,35 @@ public class PasswordPage extends VBox {
         // Button to open the add password popup
         Button btnAddPasswordPopup = new Button("Add Password");
         btnAddPasswordPopup.getStyleClass().add("action-button");
-        
+
+        // Create a back button
+        Button btnBack = new Button("Back");
+        btnBack.getStyleClass().add("back-button");
+
+        //Create a ListView for the passwords
+        ListView<VBox> passwordListView = new ListView<>();
+
+        //Get the passwords from the database
+        List<Map<String, String>> passwords = Database.getUserPasswords();
+
+        for (Map<String, String> password: passwords){
+            Label lblPlatform = new Label(password.get("platform"));
+            Label lblUsername = new Label(password.get("username"));
+
+            //Create a VBox to hold the labels
+            VBox passwordHBox = new VBox(10);
+            passwordHBox.getChildren().addAll(lblPlatform, lblUsername);
+
+            passwordListView.getItems().add(passwordHBox);
+        }
+
         // Show stage
         stage.show();
+
+        btnBack.setOnAction(backEvent -> {
+            // Set the scene to the previous scene
+            stage.setScene(previousScene);
+        });
 
         btnAddPasswordPopup.setOnAction(openPopUpEvent -> {
 
@@ -52,23 +82,23 @@ public class PasswordPage extends VBox {
             btnSave.getStyleClass().add("action-button");
 
             // Create a back button
-            Button btnBack = new Button("Back");
-            btnBack.getStyleClass().add("back-button");
+            Button btnClose = new Button("Back");
+            btnClose.getStyleClass().add("back-button");
 
             // Text Fields
+            TextField txtWebsiteName = new TextField();
+            txtWebsiteName.setPromptText("Enter the Wesbite's name...");
+
             TextField txtAddedUserName = new TextField();
             txtAddedUserName.setPromptText("Enter your Username...");
 
             TextField txtAddedPassword = new TextField();
             txtAddedPassword.setPromptText("Enter your Password...");
 
-            TextField txtWebsiteName = new TextField();
-            txtWebsiteName.setPromptText("Enter the Wesbite's name...");
-
             // Assigning styles to text field
+            txtWebsiteName.getStyleClass().add("text-field");
             txtAddedUserName.getStyleClass().add("text-field");
             txtAddedPassword.getStyleClass().add("text-field");
-            txtWebsiteName.getStyleClass().add("text-field");
 
             // Create a label for the view passwords title
             Label lblViewPasswordsTitle = new Label("Add a new password");
@@ -78,8 +108,8 @@ public class PasswordPage extends VBox {
             popupStage.setTitle("CypherGuard - Add a new Password");
 
             // Add components to the popup layout
-            popupLayout.getChildren().addAll(lblViewPasswordsTitle, txtAddedUserName, txtAddedPassword, txtWebsiteName,
-                    btnSave, btnBack);
+            popupLayout.getChildren().addAll(lblViewPasswordsTitle, txtWebsiteName, txtAddedUserName, txtAddedPassword,
+                    btnSave, btnClose);
 
             Scene popupScene = new Scene(popupLayout, 400, 400);
             popupScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
@@ -93,8 +123,27 @@ public class PasswordPage extends VBox {
                 String website = txtWebsiteName.getText();
                 String appUsername = txtAddedUserName.getText();
                 String appPassword = txtAddedPassword.getText();
+                String encrypted;
 
-                boolean isAdded = Database.addPassword(appUsername, website, appPassword);
+                if (website.isEmpty() || appUsername.isEmpty() || appPassword.isEmpty()) {
+                    // Show error alert
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Please fill in all fields.");
+                    alert.showAndWait();
+                    return;
+                }
+
+                String currentUser = UserSession.getInstance().getUsername();
+                try{
+                    String key = Key.deriveKey(Database.getMaster(currentUser), Database.getSalt(currentUser));
+                    encrypted = AES.encrypt(appPassword, key);
+                }
+                catch (Exception e){
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to encrypt password, please try again.");
+                    alert.showAndWait();
+                    return;
+                }
+
+                boolean isAdded = Database.addPassword(appUsername, website, encrypted);
 
                 if (isAdded) {
                     // Show success alert
@@ -107,21 +156,13 @@ public class PasswordPage extends VBox {
                 }
             });
 
-            btnBack.setOnAction(backEvent -> {
+            btnClose.setOnAction(closePopUpEvent -> {
                 // Close the view passwords stage
                 popupStage.close();
             });
         });
 
-        // Create a back button
-        Button btnBack = new Button("Back");
-        btnBack.getStyleClass().add("back-button");
-        btnBack.setOnAction(backEvent -> {
-            stage.setTitle("CypherGuard - Password Manager");
-            stage.setScene(previousScene);
-        });
-
         // Add components to the root layout
-        getChildren().addAll(btnAddPasswordPopup, btnBack);
+        getChildren().addAll(btnAddPasswordPopup, btnBack, passwordListView);
     }
 }

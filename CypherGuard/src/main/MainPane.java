@@ -83,22 +83,38 @@ public class MainPane extends GridPane {
             previousStage.setScene(PasswordScene);
         });
 
-        // Sign out button
-        if (userLoginStatus == true) {
-            btnViewPasswords.setDisable(false);
-            btnProfile.setDisable(false);
-            btnLogin.setVisible(false);
-            btnSignOut.setVisible(true);
-
-        } else { // Offline
+        //Check the UserSession instance when the main pane is created
+        if (UserSession.getInstance() == null) {
             btnViewPasswords.setDisable(true);
             btnProfile.setDisable(true);
             btnLogin.setVisible(true);
             btnSignOut.setVisible(false);
         }
+        else {
+            btnViewPasswords.setDisable(false);
+            btnProfile.setDisable(false);
+            btnLogin.setVisible(false);
+            btnSignOut.setVisible(true);
+        }
 
+        //Add the ChangeListener to the UserSession instance
+        UserSession.instanceProperty().addListener((obs, oldSession, newSession) -> {
+            if (newSession != null) {
+                btnViewPasswords.setDisable(false);
+                btnProfile.setDisable(false);
+                btnLogin.setVisible(false);
+                btnSignOut.setVisible(true);
+            }   
+            else { // Offline
+                btnViewPasswords.setDisable(true);
+                btnProfile.setDisable(true);
+                btnLogin.setVisible(true);
+                btnSignOut.setVisible(false);
+            }
+        });
+        
         btnSignOut.setOnAction(e -> {
-            LoginPage.setUserstatus(false);
+            UserSession.endSession();
             btnViewPasswords.setDisable(true);
             btnProfile.setDisable(true);
             btnLogin.setVisible(true);
