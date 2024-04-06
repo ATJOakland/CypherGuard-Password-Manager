@@ -113,7 +113,15 @@ public class PasswordPage extends VBox {
             });
         });
 
+        // Create a back button
+        Button btnBack = new Button("Back");
+        btnBack.getStyleClass().add("back-button");
+        btnBack.setOnAction(backEvent -> {
+            stage.setTitle("CypherGuard - Password Manager");
+            stage.setScene(previousScene);
+        });
+
         // Add components to the root layout
-        getChildren().addAll(btnAddPasswordPopup);
+        getChildren().addAll(btnAddPasswordPopup, btnBack);
     }
 }

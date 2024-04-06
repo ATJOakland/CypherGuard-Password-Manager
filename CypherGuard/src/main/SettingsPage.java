@@ -37,6 +37,7 @@ public class SettingsPage extends VBox{
         btnBack.getStyleClass().add("back-button");
         btnBack.setOnAction(backEvent -> {
             stage.setScene(previousScene);
+            stage.setTitle("CypherGuard - Password Manager");
         });
 
         // Add components to the root layout

@@ -7,30 +7,35 @@
 }
 
 /* Button Styles */
-.action-button, .close-button, .login-button, .back-button {
+.action-button, .close-button, .login-button, .back-button, .setting-button {
     -fx-background-color: rgb(15, 108, 158);
     -fx-text-fill: white;
     -fx-font-size: 14px;
     -fx-padding: 10px 20px;
     -fx-background-radius: 30px;
-    -fx-transition: background-color 0.3s ease; /* Smooth transition */
+    -fx-transition: background-color 0.3s ease;
 }
 
 .action-button:hover, .login-button:hover {
-    -fx-background-color: #4CAF50; /* Highlight color */
-    -fx-transition: background-color 0.3s ease; /* Smooth transition */
+    -fx-background-color: #4CAF50;
+    -fx-transition: background-color 0.3s ease;
 }
 
 .close-button:hover, .back-button:hover {
-    -fx-background-color: #de4343; /* Highlight color */
-    -fx-transition: background-color 0.3s ease; /* Smooth transition */
+    -fx-background-color: #de4343;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.setting-button:hover {
+    -fx-background-color: #8a8a8a;
+    -fx-transition: background-color 0.3s ease;
 }
 
 /* Logo Image */
 .logo-image {
-    -fx-fit-width: 200px; /* Set width */
-    -fx-fit-height: 200px; /* Set height */
-    -fx-transition: transform 0.5s ease; /* Smooth transition */
+    -fx-fit-width: 200px;
+    -fx-fit-height: 200px;
+    -fx-transition: transform 0.5s ease;
 }
 
 .logo-image:hover {

@@ -1,31 +1,27 @@
 package main;
 
-import javax.swing.text.View;
-
 import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.geometry.VPos;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.Label;
-import javafx.scene.control.RadioButton;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleGroup;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class MainPane extends GridPane {
+
     private Stage previousStage;
 
     public MainPane(Stage previousStage) {
+
+        boolean userLoginStatus = LoginPage.isUserOnline();
 
         this.previousStage = previousStage;
         // Center vertically
@@ -46,13 +42,15 @@ public class MainPane extends GridPane {
         Button btnSettings = new Button("Settings");
         Button btnProfile = new Button("View Profile");
         Button btnClose = new Button("Close");
+        Button btnSignOut = new Button("Sign Out");
         
         // CSS Styling for buttons
         btnLogin.getStyleClass().add("login-button");
         btnViewPasswords.getStyleClass().add("action-button");
-        btnSettings.getStyleClass().add("action-button");
+        btnSettings.getStyleClass().add("setting-button");
         btnClose.getStyleClass().add("close-button");
         btnProfile.getStyleClass().add("action-button");
+        btnSignOut.getStyleClass().add("close-button");
 
         // Button actions
         btnClose.setOnAction(e -> Platform.exit());
@@ -85,6 +83,28 @@ public class MainPane extends GridPane {
             previousStage.setScene(PasswordScene);
         });
 
+        // Sign out button
+        if (userLoginStatus == true) {
+            btnViewPasswords.setDisable(false);
+            btnProfile.setDisable(false);
+            btnLogin.setVisible(false);
+            btnSignOut.setVisible(true);
+
+        } else { // Offline
+            btnViewPasswords.setDisable(true);
+            btnProfile.setDisable(true);
+            btnLogin.setVisible(true);
+            btnSignOut.setVisible(false);
+        }
+
+        btnSignOut.setOnAction(e -> {
+            LoginPage.setUserstatus(false);
+            btnViewPasswords.setDisable(true);
+            btnProfile.setDisable(true);
+            btnLogin.setVisible(true);
+            btnSignOut.setVisible(false);
+        });
+
         // Set a fixed width for all buttons
         double buttonWidth = 200;
 
@@ -94,16 +114,20 @@ public class MainPane extends GridPane {
         btnLogin.setMinWidth(buttonWidth);
         btnClose.setMinWidth(buttonWidth);
         btnProfile.setMinWidth(buttonWidth);
+        btnSignOut.setMinWidth(buttonWidth);
 
         // Action Button Pane Design
         VBox actionbuttonBox = new VBox(20); 
         actionbuttonBox.setAlignment(Pos.CENTER);
-        actionbuttonBox.getChildren().addAll(btnViewPasswords, btnSettings);
+        actionbuttonBox.getChildren().addAll(btnViewPasswords, btnProfile);
+
+        StackPane loginOutPane = new StackPane();
+        loginOutPane.getChildren().addAll(btnLogin, btnSignOut);
 
         // Header Button Pane Design
         VBox HeaderButtonBox = new VBox(20);
         HeaderButtonBox.setAlignment(Pos.TOP_RIGHT);
-        HeaderButtonBox.getChildren().addAll(btnLogin, btnProfile, btnClose);
+        HeaderButtonBox.getChildren().addAll(loginOutPane, btnSettings, btnClose);
 
         // Create an HBox to hold the VBox containers side by side
         HBox hbox = new HBox(20);
