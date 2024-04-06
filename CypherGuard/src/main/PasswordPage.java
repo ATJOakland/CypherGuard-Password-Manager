@@ -162,6 +162,9 @@ public class PasswordPage extends VBox {
             });
         });
 
+        // To Do:
+        // Implement password view - Open
+
         // Add components to the root layout
         getChildren().addAll(btnAddPasswordPopup, btnBack, passwordListView);
     }

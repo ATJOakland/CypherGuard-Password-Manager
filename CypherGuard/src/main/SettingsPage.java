@@ -40,6 +40,11 @@ public class SettingsPage extends VBox{
             stage.setTitle("CypherGuard - Password Manager");
         });
 
+        // To Do:
+        // LIGHT DARK VERSION VISUALS OF APP - Tim
+        // Start up APP on PC launch option - Open
+        // Delete Account Option - Open
+
         // Add components to the root layout
         getChildren().addAll(lblSettingsTitle, btnBack);
     }
