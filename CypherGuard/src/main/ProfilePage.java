@@ -118,6 +118,10 @@ public class ProfilePage extends VBox {
 
         // Add components to the root layout
         getChildren().addAll(logoImageView, lblProfileTitle, profileContentHBox);
+
+        // To Do:
+        // Create dynamic user profile info instead of hard coding - Open
+        
     }
 }
 
