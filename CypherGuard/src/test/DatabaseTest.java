@@ -7,9 +7,11 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
 import java.sql.ResultSet;
 
-import org.junit.jupiter.api.Order;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -94,7 +96,6 @@ public class DatabaseTest {
     }
 
     @Test
-    @Order(6)
     void testAddPassword() throws Exception {
         
         try{
@@ -113,7 +114,6 @@ public class DatabaseTest {
     }
 
     @Test
-    @Order(5)
     void testCreateUser() {
 
         try {
@@ -142,7 +142,6 @@ public class DatabaseTest {
     }
 
     @Test
-    @Order(8)
     void testDeletePassword() {
         try{
             Database.deletePassword("testPlatform");
@@ -158,7 +157,6 @@ public class DatabaseTest {
     }
 
     @Test
-    @Order(9)
     void testDeleteUser() {
         try{
             Database.deleteUser("testUser");
@@ -175,14 +173,12 @@ public class DatabaseTest {
     }
 
     @Test
-    @Order(4)
     void testGetMaster() {
         String master = Database.getMaster("testUser");
         Assertions.assertEquals("testMaster", master, "Master should match expected value");
     }
 
     @Test
-    @Order(3)
     void testGetPasswordByUsername() {
         String[] info = Database.getPlatformInfo("testPlatform");
         Assertions.assertEquals("testPassword", info[1], "Password should match expected value");
@@ -190,14 +186,12 @@ public class DatabaseTest {
     }
 
     @Test
-    @Order(2)
     void testGetSalt() {
         String salt = Database.getSalt("testUser");
         Assertions.assertEquals("testSalt", salt, "Salt should match expected value");
     }
 
     @Test
-    @Order(1)
     void testInitializeDatabase() throws SQLException{
         DatabaseMetaData metaData = connection.getMetaData();
         ResultSet resultSet = metaData.getTables(null, null, "users", null);
@@ -208,7 +202,6 @@ public class DatabaseTest {
     }
 
     @Test
-    @Order(7)
     void testUpdatePassword() {
         try{
             Database.updatePassword( "testPlatform", "updatedPassword");
@@ -221,6 +214,20 @@ public class DatabaseTest {
             Assertions.assertEquals("updatedPassword", resultSet.getString("password"), "Password should match expected value");
         }
         catch (SQLException e) {
+            Assertions.fail("SQLException thrown: " + e.getMessage());
+        }
+    }
+
+    @Test
+    void testGetAllData() {
+        try{
+            List<Map<String, String>> expected = Arrays.asList(
+                Map.of("username", "testUsername", "platform", "testPlatform", "password", "testPassword")
+            );
+            List<Map<String, String>> passwords = Database.getUserPasswords();
+            Assertions.assertEquals(expected, passwords);
+        }
+        catch (Exception e) {
             Assertions.fail("SQLException thrown: " + e.getMessage());
         }
     }
