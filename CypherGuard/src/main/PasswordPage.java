@@ -10,9 +10,9 @@ import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
-public class ViewAndSavePasswords extends VBox{
+public class PasswordPage extends VBox{
 
-    public ViewAndSavePasswords(Stage stage, Scene previousScene) {
+    public PasswordPage(Stage stage, Scene previousScene) {
         
         // Create a layout for the view passwords window
         setAlignment(Pos.CENTER);

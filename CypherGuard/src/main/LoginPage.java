@@ -14,9 +14,9 @@ import javafx.stage.Stage;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 
-public class UserAuthentication extends VBox{
+public class LoginPage extends VBox{
 
-    public UserAuthentication(Stage stage, Scene previousScene){
+    public LoginPage(Stage stage, Scene previousScene){
         // Create a layout for the login window
         setAlignment(Pos.CENTER);
         setPadding(new Insets(20));
