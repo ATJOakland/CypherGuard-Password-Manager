@@ -12,16 +12,19 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.util.Duration;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import javafx.animation.PauseTransition;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -82,7 +85,7 @@ public class PasswordPage extends GridPane {
         passwordListView = new ListView<>();
         setupListView();
 
-        //Search bar
+        // Search bar
         setupSearchBar();
 
         passwordListView.getSelectionModel().selectFirst();
@@ -107,7 +110,7 @@ public class PasswordPage extends GridPane {
         setPadding(new Insets(PADDING));
         // Load CSS styles
         try {
-            
+
             if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
                 getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
             } else { // light mode is on
@@ -177,35 +180,34 @@ public class PasswordPage extends GridPane {
 
         btnEditPassword.setOnAction(editEvent -> {
             if (btnEditPassword.getText().equals("Edit")) {
-                //Make test text fields editable
+                // Make test text fields editable
                 txtUsername.setEditable(true);
                 txtPassword.setEditable(true);
                 txtUrl.setEditable(true);
 
                 btnEditPassword.setText("Save");
-            } 
-            else {
+            } else {
                 txtUsername.setEditable(false);
                 txtPassword.setEditable(false);
                 txtUrl.setEditable(false);
                 btnEditPassword.setText("Edit");
 
-                //Create a new ConfirmMasterPasswordPopup
+                // Create a new ConfirmMasterPasswordPopup
                 Stage popupStage = new Stage();
 
-                //Create layout for popup
+                // Create layout for popup
                 VBox popupLayout = new VBox(SPACING);
                 popupLayout.setAlignment(Pos.CENTER);
                 popupLayout.setPadding(new Insets(PADDING));
 
-                //Buttons
+                // Buttons
                 Button btnConfirm = createButton("Confirm", ACTION_BUTTON_STYLE);
                 Button btnClose = createButton("Back", BACK_BUTTON_STYLE);
 
-                //Text Fields
+                // Text Fields
                 TextField txtConfirmMaster = createTextField("", TEXT_FIELD_STYLE);
 
-                //Label
+                // Label
                 Label lblConfirmMaster = createLabel("Confirm master password", LOGIN_TITLE_STYLE);
 
                 // Set the title of the view passwords window
@@ -223,27 +225,27 @@ public class PasswordPage extends GridPane {
                 btnConfirm.setOnAction(confirmEvent -> {
                     String currentUser = UserSession.getInstance().getUsername();
                     String inputMaster = txtConfirmMaster.getText();
-                    Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser), Database.getSalt(currentUser));
+                    Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser),
+                            Database.getSalt(currentUser));
 
                     if (isAuthenticated == null) {
                         Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect master password.");
                         alert.showAndWait();
                         return;
                     }
-                        String user = UserSession.getInstance().getUsername();
-                        String encryptedPassword = "";
+                    String user = UserSession.getInstance().getUsername();
+                    String encryptedPassword = "";
 
-                        //Encrypt the password
-                        try{
-                            String key = Key.deriveKey(Database.getMaster(user), Database.getSalt(user));
-                            encryptedPassword = AES.encrypt(txtPassword.getText(), key);
-                        }
-                        catch (Exception e) {
-                            System.out.println("Error decrypting password: " + e.getMessage());
-                        }
+                    // Encrypt the password
+                    try {
+                        String key = Key.deriveKey(Database.getMaster(user), Database.getSalt(user));
+                        encryptedPassword = AES.encrypt(txtPassword.getText(), key);
+                    } catch (Exception e) {
+                        System.out.println("Error decrypting password: " + e.getMessage());
+                    }
 
-                        boolean isUpdated = Database.updatePassword(txtUrl.getText(),encryptedPassword);
-                        isUpdated = Database.updateUsername(txtUrl.getText(),txtUsername.getText());
+                    boolean isUpdated = Database.updatePassword(txtUrl.getText(), encryptedPassword);
+                    isUpdated = Database.updateUsername(txtUrl.getText(), txtUsername.getText());
 
                     if (isUpdated) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION, "Credentials updated successfully!");
@@ -274,22 +276,22 @@ public class PasswordPage extends GridPane {
 
         btnDeletePassword.setOnAction(deleteEvent -> {
 
-            //Create a new DeletePasswordPopup
+            // Create a new DeletePasswordPopup
             Stage popupStage = new Stage();
 
-            //Create layout for popup
+            // Create layout for popup
             VBox popupLayout = new VBox(SPACING);
             popupLayout.setAlignment(Pos.CENTER);
             popupLayout.setPadding(new Insets(PADDING));
 
-            //Buttons
+            // Buttons
             Button btnConfirm = createButton("Confirm", ACTION_BUTTON_STYLE);
             Button btnClose = createButton("Back", BACK_BUTTON_STYLE);
 
-            //Text Fields
+            // Text Fields
             TextField txtConfirmMaster = createTextField("", TEXT_FIELD_STYLE);
 
-            //Label
+            // Label
             Label lblConfirmMaster = createLabel("Confirm master password", LOGIN_TITLE_STYLE);
 
             // Set the title of the view passwords window
@@ -307,7 +309,8 @@ public class PasswordPage extends GridPane {
             btnConfirm.setOnAction(confirmEvent -> {
                 String currentUser = UserSession.getInstance().getUsername();
                 String inputMaster = txtConfirmMaster.getText();
-                Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser), Database.getSalt(currentUser));
+                Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser),
+                        Database.getSalt(currentUser));
 
                 if (isAuthenticated == null) {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect master password.");
@@ -381,15 +384,17 @@ public class PasswordPage extends GridPane {
             Scene popupScene = new Scene(popupLayout, 400, 400);
 
             try {
-            
+
                 if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
-                    popupScene.getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+                    popupScene.getStylesheets()
+                            .add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
                     popupStage.setScene(popupScene);
                 } else { // light mode is on
-                    popupScene.getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+                    popupScene.getStylesheets()
+                            .add(getClass().getResource("/resources/light-styles.css").toExternalForm());
                     popupStage.setScene(popupScene);
                 }
-    
+
             } catch (Exception e) {
                 System.err.println("Failed to load CSS file: " + e.getMessage());
             }
@@ -442,7 +447,7 @@ public class PasswordPage extends GridPane {
                     // Select the first item in the ListView
                     passwordListView.getSelectionModel().selectFirst();
 
-                    //Clear the text fields in case user wants to add another password
+                    // Clear the text fields in case user wants to add another password
                     txtWebsiteName.clear();
                     txtAddedUserName.clear();
                     txtAddedPassword.clear();
@@ -483,6 +488,16 @@ public class PasswordPage extends GridPane {
         txtPassword.setEditable(false);
         txtUrl.setEditable(false);
 
+        Map<String, Image> faviconCache = new HashMap<>();
+
+        //Pre-load the favicons
+        for (Map<String, String> password: observableList) {
+            String faviconUrl = "https://logo.clearbit.com/" + password.get("platform") + "?size=180";
+            Image image = new Image(faviconUrl, true);
+            faviconCache.put(password.get("platform"), image);
+        }
+
+
         // Cell factory to accomodate favicons and labels
         passwordListView.setCellFactory(lv -> new ListCell<>() {
             private final ImageView imageView = new ImageView();
@@ -503,13 +518,14 @@ public class PasswordPage extends GridPane {
                 super.updateItem(password, empty);
                 if (empty || password == null) {
                     setGraphic(null);
-                } else {
+                } 
+                else {
                     String websiteName = password.get("platform");
                     if (websiteName.startsWith("www.")) {
-                        websiteName = websiteName.substring(4);
+                        websiteName = websiteName.replaceFirst("^www\\.", "");
                     }
                     if (websiteName.contains(".")) {
-                        websiteName = websiteName.substring(0, websiteName.indexOf('.'));
+                        websiteName = websiteName.substring(0, websiteName.lastIndexOf('.'));
                     }
                     if (websiteName != null && !websiteName.isEmpty()) {
                         websiteName = websiteName.substring(0, 1).toUpperCase()
@@ -519,8 +535,13 @@ public class PasswordPage extends GridPane {
                     lblPlatform.setText(websiteName);
                     lblUsername.setText(password.get("username"));
 
-                    String faviconUrl = "https://logo.clearbit.com/" + password.get("platform") + "?size=180";
-                    Image image = new Image(faviconUrl, true);
+                    Image image = faviconCache.get(password.get("platform"));
+                    if (image == null) {
+                        String faviconUrl = "https://logo.clearbit.com/" + password.get("platform") + "?size=180";
+                        image = new Image(faviconUrl, true);
+                        faviconCache.put(password.get("platform"), image);
+                    }
+
                     imageView.setImage(image);
 
                     setGraphic(hbox);
@@ -535,11 +556,10 @@ public class PasswordPage extends GridPane {
                 String user = UserSession.getInstance().getUsername();
                 String decryptedPassword = "Error decrypting password";
                 // Decrypt the password
-                try{
+                try {
                     String key = Key.deriveKey(Database.getMaster(user), Database.getSalt(user));
                     decryptedPassword = AES.decrypt(newSelection.get("password"), key);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     System.out.println("Error decrypting password: " + e.getMessage());
                 }
                 txtPassword.setText(decryptedPassword);
@@ -569,33 +589,39 @@ public class PasswordPage extends GridPane {
         });
     }
 
-    private void setupSearchBar(){
+    private void setupSearchBar() {
         txtSearch = new TextField();
-        //Create a filtered list
+        // Create a filtered list
         FilteredList<Map<String, String>> filteredData = new FilteredList<>(observableList, p -> true);
 
-        //Set the filter Predicate whenever the filter changes
+        // Create a PauseTransition for debouncing
+        PauseTransition pause = new PauseTransition(Duration.millis(200));
+
+        // Set the filter Predicate whenever the filter changes
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(password -> {
-                //If filter text is empty, display all passwords
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
+            // On each text change, restart the PauseTransition
+            pause.setOnFinished(event -> {
+                filteredData.setPredicate(password -> {
+                    // If filter text is empty, display all passwords
+                    if (newValue == null || newValue.isEmpty()) {
+                        return true;
+                    }
 
-                //Compare the platform and username of every password with filter text
-                String lowerCaseFilter = newValue.toLowerCase();
+                    // Compare the platform and username of every password with filter text
+                    String lowerCaseFilter = newValue.toLowerCase();
 
-                if (password.get("platform").toLowerCase().contains(lowerCaseFilter)) {
-                    return true; 
-                } 
-                else if (password.get("username").toLowerCase().contains(lowerCaseFilter)) {
-                    return true; 
-                }
-                return false; //Does not match
+                    if (password.get("platform").toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    } else if (password.get("username").toLowerCase().contains(lowerCaseFilter)) {
+                        return true;
+                    }
+                    return false; // Does not match
+                });
             });
+            pause.playFromStart();
         });
 
-        //Add sorted/filtered data to the table
+        // Add sorted/filtered data to the table
         passwordListView.setItems(filteredData);
     }
 }
