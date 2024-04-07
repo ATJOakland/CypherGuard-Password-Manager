@@ -105,7 +105,18 @@ public class PasswordPage extends GridPane {
     private List<Pane> setupLayout() {
         setAlignment(Pos.CENTER);
         setPadding(new Insets(PADDING));
-        getStylesheets().add(getClass().getResource(CSS_FILE_PATH).toExternalForm());
+        // Load CSS styles
+        try {
+            
+            if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+            } else { // light mode is on
+                getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
 
         VBox vboxLeft = new VBox(SPACING);
         HBox topLeftHBox = new HBox(SPACING);
@@ -357,8 +368,20 @@ public class PasswordPage extends GridPane {
                     btnSave, btnClose);
 
             Scene popupScene = new Scene(popupLayout, 400, 400);
-            popupScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
-            popupStage.setScene(popupScene);
+
+            try {
+            
+                if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                    popupScene.getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+                    popupStage.setScene(popupScene);
+                } else { // light mode is on
+                    popupScene.getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+                    popupStage.setScene(popupScene);
+                }
+    
+            } catch (Exception e) {
+                System.err.println("Failed to load CSS file: " + e.getMessage());
+            }
 
             popupStage.show();
 

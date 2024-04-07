@@ -43,7 +43,17 @@ public class ProfilePage extends VBox {
         Label lblProfileTitle = new Label("Welcome to Your Profile");
         lblProfileTitle.getStyleClass().add("login-title");
 
-        getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
+        try {
+            
+            if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+            } else { // light mode is on
+                getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
 
         // Set the title of the profile window
         stage.setTitle("CypherGuard - Profile View");
