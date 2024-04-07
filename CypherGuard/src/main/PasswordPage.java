@@ -230,9 +230,20 @@ public class PasswordPage extends GridPane {
                         alert.showAndWait();
                         return;
                     }
+                        String user = UserSession.getInstance().getUsername();
+                        String encryptedPassword = "";
 
-                    boolean isUpdated = Database.updatePassword(txtUrl.getText(),txtPassword.getText());
-                    isUpdated = Database.updateUsername(txtUrl.getText(),txtUsername.getText());
+                        //Encrypt the password
+                        try{
+                            String key = Key.deriveKey(Database.getMaster(user), Database.getSalt(user));
+                            encryptedPassword = AES.encrypt(txtPassword.getText(), key);
+                        }
+                        catch (Exception e) {
+                            System.out.println("Error decrypting password: " + e.getMessage());
+                        }
+
+                        boolean isUpdated = Database.updatePassword(txtUrl.getText(),encryptedPassword);
+                        isUpdated = Database.updateUsername(txtUrl.getText(),txtUsername.getText());
 
                     if (isUpdated) {
                         Alert alert = new Alert(Alert.AlertType.INFORMATION, "Credentials updated successfully!");
@@ -520,7 +531,18 @@ public class PasswordPage extends GridPane {
         passwordListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 txtUsername.setText(newSelection.get("username"));
-                txtPassword.setText(newSelection.get("password"));
+
+                String user = UserSession.getInstance().getUsername();
+                String decryptedPassword = "Error decrypting password";
+                // Decrypt the password
+                try{
+                    String key = Key.deriveKey(Database.getMaster(user), Database.getSalt(user));
+                    decryptedPassword = AES.decrypt(newSelection.get("password"), key);
+                }
+                catch (Exception e) {
+                    System.out.println("Error decrypting password: " + e.getMessage());
+                }
+                txtPassword.setText(decryptedPassword);
                 txtUrl.setText(newSelection.get("platform"));
 
                 String websiteName = newSelection.get("platform");
