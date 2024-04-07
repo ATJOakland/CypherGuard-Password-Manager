@@ -71,18 +71,6 @@ public class CypherGuard extends Application {
         Image icon = new Image(getClass().getResourceAsStream("/resources/CypherGuardIcon.png"));
         primaryStage.getIcons().add(icon);
 
-        try {
-
-            if (isLightModeEnabled(CypherGuard.class) == false) {
-                scene.getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
-            } else { // light mode is on
-                scene.getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
-            }
-
-        } catch (Exception e) {
-            System.err.println("Failed to load CSS file: " + e.getMessage());
-        }
-
         // Main window variables
         primaryStage.setTitle("CypherGuard - Password Manager"); // Window title
         primaryStage.setScene(scene); // Setting the scene equal to the scene object which takes from the mainPane

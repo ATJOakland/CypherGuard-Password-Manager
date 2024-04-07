@@ -18,6 +18,20 @@ import javafx.stage.Stage;
 public class MainPane extends GridPane {
 
     private Stage previousStage;
+    
+    public void refreshStylesheet() {
+        getStylesheets().clear();
+        try {
+            if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+            } else {
+                getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
+    }
+    
 
     public MainPane(Stage previousStage) {
 
@@ -31,6 +45,20 @@ public class MainPane extends GridPane {
         Image logoImg = new Image(getClass().getResourceAsStream("/resources/CypherGuardLogo.png"));
         ImageView logoImageView = new ImageView(logoImg);
         add(logoImageView, 0, 0);
+        
+        try {
+            
+            if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                getStylesheets().clear();
+                getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+            } else { // light mode is on
+                getStylesheets().clear();
+                getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
 
         // Center the logoImageView
         setHalignment(logoImageView, HPos.CENTER);

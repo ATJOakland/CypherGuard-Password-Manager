@@ -122,8 +122,20 @@ public class PasswordPage extends VBox {
                     btnSave, btnClose);
 
             Scene popupScene = new Scene(popupLayout, 400, 400);
-            popupScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
-            popupStage.setScene(popupScene);
+
+            try {
+            
+                if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                    popupScene.getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+                    popupStage.setScene(popupScene);
+                } else { // light mode is on
+                    popupScene.getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+                    popupStage.setScene(popupScene);
+                }
+    
+            } catch (Exception e) {
+                System.err.println("Failed to load CSS file: " + e.getMessage());
+            }
 
             // Show stage
             popupStage.show();
