@@ -1,6 +1,7 @@
 package main;
 
 import javafx.scene.control.Label;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.Button;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -22,9 +23,22 @@ public class SettingsPage extends VBox{
 
         // Create a label for the settings title
         Label lblSettingsTitle = new Label("Welcome to Settings");
-        lblSettingsTitle.getStyleClass().add("login-title");
+        lblSettingsTitle.getStyleClass().add("login-title");   
 
-        getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
+        // Create some radio buttons for settings
+        RadioButton rbtnStyleChoice = new RadioButton("Light Mode Enabled");
+
+        try {
+            
+            if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+            } else { // light mode is on
+                getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
 
         // Set the title of the settings window
         stage.setTitle("CypherGuard - Settings");
@@ -46,6 +60,6 @@ public class SettingsPage extends VBox{
         // Delete Account Option - Open
 
         // Add components to the root layout
-        getChildren().addAll(lblSettingsTitle, btnBack);
+        getChildren().addAll(lblSettingsTitle, rbtnStyleChoice, btnBack);
     }
 }

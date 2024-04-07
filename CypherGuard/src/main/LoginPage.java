@@ -42,7 +42,17 @@ public class LoginPage extends VBox{
             
         Label lblLoginTitle = new Label("Login or Create a New Account Below");
 
-        getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
+        try {
+            
+            if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+            } else { // light mode is on
+                getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
         
         // Set the title of the login window
         stage.setTitle("CypherGuard - Login");

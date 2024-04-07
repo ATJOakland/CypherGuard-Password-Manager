@@ -12,6 +12,11 @@ package main;
 // Oakland University
 //************************************************************************
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+
 //************************************************************************
 // This Script is the main script. It sets the window variables and references the first pane of the app. 
 //************************************************************************
@@ -29,6 +34,33 @@ import javafx.stage.Stage;
 
 public class CypherGuard extends Application {
 
+    public static boolean isLightModeEnabled(Class<?> clazz) {
+        boolean isLightModeEnabled = false;
+        try {
+            // Load the settings file as a resource stream
+            InputStream inputStream = clazz.getResourceAsStream("/resources/userSettings.txt");
+            if (inputStream != null) {
+                BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    if (line.startsWith("light-mode:")) {
+                        String value = line.substring(line.indexOf(":") + 1).trim();
+                        isLightModeEnabled = value.equalsIgnoreCase("enabled");
+                        break; // No need to continue reading the file once the light-mode preference is found
+                    }
+                }
+                reader.close();
+            } else {
+                System.err.println("Settings file not found!");
+            }
+        } catch (Exception e) {
+            // Handle file reading errors
+            e.printStackTrace();
+            // Default to dark mode if unable to read the preference
+        }
+        return isLightModeEnabled;
+    }
+
     // Creates the main GUI Pane of the App
     @SuppressWarnings("unchecked")
     @Override
@@ -40,7 +72,13 @@ public class CypherGuard extends Application {
         primaryStage.getIcons().add(icon);
 
         try {
-            scene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
+
+            if (isLightModeEnabled(CypherGuard.class) == false) {
+                scene.getStylesheets().add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+            } else { // light mode is on
+                scene.getStylesheets().add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+            }
+
         } catch (Exception e) {
             System.err.println("Failed to load CSS file: " + e.getMessage());
         }

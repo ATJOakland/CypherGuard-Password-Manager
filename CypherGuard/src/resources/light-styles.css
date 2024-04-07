@@ -1,0 +1,174 @@
+/* styles.css */
+
+/* This is for all stages page design */
+.root { 
+    -fx-background-color: #ddd;
+    -fx-padding: 20px;
+}
+
+/* Button Styles */
+.action-button, .close-button, .login-button, .back-button, .setting-button {
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-text-fill: white;
+    -fx-font-size: 14px;
+    -fx-padding: 10px 20px;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.action-button:hover, .login-button:hover {
+    -fx-background-color: #4CAF50;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.close-button:hover, .back-button:hover {
+    -fx-background-color: #de4343;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.setting-button:hover {
+    -fx-background-color: #8a8a8a;
+    -fx-transition: background-color 0.3s ease;
+}
+
+/* Logo Image */
+.logo-image {
+    -fx-fit-width: 200px;
+    -fx-fit-height: 200px;
+    -fx-transition: transform 0.5s ease;
+}
+
+.logo-image:hover {
+    -fx-rotate: 360deg; /* Rotate the image */
+}
+
+/* Radio Button */
+.radio-button {
+    -fx-padding: 10px;
+    -fx-text-fill: white;
+    -fx-alignment: center;
+}
+
+.radio-button .radio-text {
+    -fx-padding: 0 10px;
+}
+
+.radio-button .radio-circle {
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-border-radius: 50%;
+    -fx-padding: 2px;
+}
+
+/* Radio Button when selected */
+.radio-button:selected {
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.radio-button:hover {
+    -fx-background-color: rgb(10, 73, 107);
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.radio-button:selected:hover {
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.radio-button .radio, .radio-button .radio-dot {
+    -fx-opacity: 0;
+}
+
+.text-field {
+    -fx-font-size: 14px;
+    -fx-padding: 5px;
+    -fx-background-color: #ffffff; 
+    -fx-border-color: rgb(15, 108, 158); 
+    -fx-border-width: 1px; 
+    -fx-background-radius: 30px;
+    -fx-border-radius: 30px;
+}
+
+/* Text field when focused */
+.text-field:focused {
+    -fx-border-color: #dddd; 
+    -fx-border-width: 2px; 
+    -fx-background-radius: 30px;
+    -fx-border-radius: 30px;
+}
+
+/* Text field prompt text */
+.text-field .prompt-text {
+    -fx-font-style: italic; 
+    -fx-fill: #a9a9a9; 
+}
+
+.radio-buttons-box {
+    -fx-background-color: rgb(1, 60, 91);
+    -fx-pref-width: 200px; 
+    -fx-background-radius: 30px;
+    -fx-padding: 10px;
+}
+
+.login-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 20px;
+    -fx-padding: 0 0 20px 0;
+}
+
+.profile-label {
+    -fx-text-fill: black;
+    -fx-padding: 10px;
+    -fx-background-color: #ddd;
+    -fx-background-radius: 30px;
+    -fx-font-weight: bold;
+}
+
+.profile-info-container {
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-background-radius: 30px;
+    -fx-padding: 20px;
+}
+
+.show-password-radio-button {
+    -fx-padding: 10px;
+    -fx-alignment: center;
+    -fx-background-color: #535353;
+    -fx-text-fill: #929292;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.show-password-radio-button .radio-text {
+    -fx-padding: 0 10px;
+}
+
+.show-password-radio-button .radio-circle {
+    -fx-background-color: rgb(15, 108, 158);
+    -fx-border-radius: 50%;
+    -fx-padding: 2px;
+}
+
+.show-password-radio-button:selected {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.show-password-radio-button:hover {
+    -fx-background-color: #2b652d;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
+
+.show-password-radio-button:selected:hover {
+    -fx-background-color: #4CAF50;
+    -fx-text-fill: white;
+    -fx-background-radius: 30px;
+    -fx-transition: background-color 0.3s ease;
+}
