@@ -141,8 +141,6 @@ public class LoginPage extends VBox{
 
                 if (isValid) {
                     UserSession.getInstance(username);
-                    Alert alert = new Alert(Alert.AlertType.CONFIRMATION, "Now logged in as " + username + "!");
-                    alert.showAndWait();
                     stage.setScene(previousScene);
                     stage.setTitle("CypherGuard - Password Manager");
                 } else {
@@ -161,8 +159,6 @@ public class LoginPage extends VBox{
                 }
                 boolean isCreated = Database.createUser(username, password, salt);
                 if(isCreated){
-                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Account created successfully!");
-                    alert.showAndWait();
                     stage.setScene(previousScene);
                     stage.setTitle("CypherGuard - Password Manager");
                 }
