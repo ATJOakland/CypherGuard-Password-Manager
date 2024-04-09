@@ -144,7 +144,7 @@ public class DatabaseTest {
     @Test
     void testDeletePassword() {
         try{
-            Database.deletePassword("testPlatform");
+            Database.deletePassword("testPlatform", "testUsername");
             PreparedStatement statement = connection.prepareStatement("SELECT COUNT(*) FROM passwords");
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();

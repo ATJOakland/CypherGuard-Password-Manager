@@ -1,6 +1,8 @@
 package test;
+import static org.junit.Assert.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -12,11 +14,14 @@ public class KeyTest {
     @Test
     void testAuthenticate() throws Exception{
         String password = "password";
+        String incorrectPassword = "wrongpassword";
         String salt = Key.generateSalt();
         String derivedKey = Key.deriveKey(password, salt);
-        boolean result = Key.authenticate(password, derivedKey, salt);
+        boolean correctresult = Key.authenticate(password, derivedKey, salt);
+        boolean incorrectResult = Key.authenticate(incorrectPassword, derivedKey, salt);
 
-        assertTrue(result, "Authentication should succeed with correct password and derived key");
+        assertTrue(correctresult, "Authentication should succeed with correct password and derived key");
+        assertFalse(incorrectResult, "Authentication should fail with incorrect password and derived key");
     }
 
     @Test
@@ -39,10 +44,17 @@ public class KeyTest {
 
     @Test
     void testGenerateSalt() throws Exception{
-        String salt = Key.generateSalt();
+        String salt1 = Key.generateSalt();
+        String salt2 = Key.generateSalt();
 
-        assertNotNull(salt, "Generated salt should not be null");
-        assertEquals(64, salt.length(), "Generated salt should be 64 characters long (256 bits in hexadecimal");
+        assertNotNull(salt1, "Generated salt should not be null");
+        assertEquals(64, salt1.length(), "Generated salt should be 64 characters long (256 bits in hexadecimal");
+
+        assertNotNull(salt2, "Generated salt should not be null");
+        assertEquals(64, salt2.length(), "Generated salt should be 64 characters long (256 bits in hexadecimal");
+
+        assertNotEquals(salt1, salt2, "Generated salts should be unique");
+
     }
 
     @Test

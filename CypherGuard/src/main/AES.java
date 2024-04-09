@@ -17,6 +17,10 @@ public class AES {
     public static String encrypt(String input, String key) 
         throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
         InvalidKeyException, BadPaddingException, IllegalBlockSizeException{
+
+        if(input.isEmpty()){
+            throw new IllegalArgumentException("Input cannot be empty");
+        }
         
         //Generate 12 byte IV as per NIST reccomendation
         byte[] iv = new byte[12];
@@ -42,6 +46,10 @@ public class AES {
     public static String decrypt(String cipherText, String key)
         throws NoSuchPaddingException, NoSuchAlgorithmException, InvalidAlgorithmParameterException,
         InvalidKeyException, BadPaddingException, IllegalBlockSizeException{
+
+        if(cipherText.isEmpty()){
+            throw new IllegalArgumentException("Input cannot be empty");
+        }
 
         //Convert hex to bytes
         byte[] ivAndCipherText = Key.hexToBytes(cipherText);
