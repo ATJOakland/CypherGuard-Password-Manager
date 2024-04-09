@@ -61,6 +61,7 @@ public class PasswordPage extends GridPane {
         Pane topRightHBox = layout.get(3);
         Pane selectionVBox = layout.get(4);
         Pane topSelectionHBox = layout.get(5);
+        Pane passwordHBox = layout.get(6);
 
         // Set a border on the VBox instances for visibility
         vboxLeft.setStyle("-fx-border-color: red;");
@@ -75,6 +76,8 @@ public class PasswordPage extends GridPane {
         Button btnBack = buttons.get(1);
         Button btnEditPassword = buttons.get(2);
         Button btnDeletePassword = buttons.get(3);
+        Button btnUnHidePassword = buttons.get(4);
+        Button btnGeneratePassword = buttons.get(5);
 
         // Labels
         Label lblWebsite = createLabel("Website: ", "label");
@@ -89,9 +92,9 @@ public class PasswordPage extends GridPane {
         setupSearchBar();
 
         passwordListView.getSelectionModel().selectFirst();
-
+        passwordHBox.getChildren().addAll(txtPassword, btnGeneratePassword, btnUnHidePassword);
         topSelectionHBox.getChildren().addAll(favicon, lblWebsiteName);
-        selectionVBox.getChildren().addAll(topSelectionHBox, lblUsername, txtUsername, lblPassword, txtPassword,
+        selectionVBox.getChildren().addAll(topSelectionHBox, lblUsername, txtUsername, lblPassword, passwordHBox,
                 lblWebsite, txtUrl);
         topRightHBox.getChildren().addAll(btnEditPassword, btnDeletePassword);
         topLeftHBox.getChildren().addAll(txtSearch, btnAddPasswordPopup);
@@ -127,6 +130,7 @@ public class PasswordPage extends GridPane {
         VBox vboxRight = new VBox(SPACING);
         HBox topRightHBox = new HBox(SPACING);
         VBox selectionVBox = new VBox(SPACING);
+        HBox passwordHBox = new HBox(SPACING);
         HBox topSelectionHBox = new HBox(SPACING);
 
         topLeftHBox.setAlignment(Pos.CENTER);
@@ -142,11 +146,12 @@ public class PasswordPage extends GridPane {
 
         selectionVBox.setAlignment(Pos.CENTER_LEFT);
         topSelectionHBox.setAlignment(Pos.CENTER_LEFT);
+        passwordHBox.setAlignment(Pos.CENTER_RIGHT);
 
         // Set the title of the view passwords window
         stage.setTitle("CypherGuard - View Passwords");
 
-        return Arrays.asList(vboxLeft, vboxRight, topLeftHBox, topRightHBox, selectionVBox, topSelectionHBox);
+        return Arrays.asList(vboxLeft, vboxRight, topLeftHBox, topRightHBox, selectionVBox, topSelectionHBox, passwordHBox);
     }
 
     private Button createButton(String text, String styleClass) {
@@ -169,14 +174,31 @@ public class PasswordPage extends GridPane {
     }
 
     private List<Button> setupButtons(Scene previousScene) {
-        // Button to open the add password popup
+
         Button btnAddPasswordPopup = createButton("+", ACTION_BUTTON_STYLE);
-        // Create a back button
         Button btnBack = createButton("Back", BACK_BUTTON_STYLE);
-        // Create edit password button
         Button btnEditPassword = createButton("Edit", ACTION_BUTTON_STYLE);
-        // Create delete password button
         Button btnDeletePassword = createButton("Delete", ACTION_BUTTON_STYLE);
+        Button btnGeneratePassword = createButton("Generate Password", ACTION_BUTTON_STYLE);
+        Button btnUnHidePassword = createButton("Unhide", ACTION_BUTTON_STYLE);
+
+        btnGeneratePassword.setOnAction(generateEvent ->{
+            //Add delay?
+            txtPassword.clear();
+            String generatedPassword = Key.generatePassword(12);
+            txtPassword.setText(generatedPassword);
+            
+            String encrypted = null;
+
+            //Add new password to database
+            try{
+                encrypted = AES.encrypt(generatedPassword, Key.deriveKey(Database.getMaster(UserSession.getInstance().getUsername()), Database.getSalt(UserSession.getInstance().getUsername())));
+            }
+            catch (Exception e) {
+                System.out.println("Error encrypting password: " + e.getMessage());
+            }
+            Database.updatePassword(txtUrl.getText(), encrypted);
+        });
 
         btnEditPassword.setOnAction(editEvent -> {
             if (btnEditPassword.getText().equals("Edit")) {
@@ -318,7 +340,7 @@ public class PasswordPage extends GridPane {
                     return;
                 }
 
-                boolean isDeleted = Database.deletePassword(txtUrl.getText());
+                boolean isDeleted = Database.deletePassword(txtUrl.getText(), txtUsername.getText());
 
                 if (isDeleted) {
                     Alert alert = new Alert(Alert.AlertType.INFORMATION, "Password deleted successfully!");
@@ -465,7 +487,7 @@ public class PasswordPage extends GridPane {
             });
         });
 
-        return Arrays.asList(btnAddPasswordPopup, btnBack, btnEditPassword, btnDeletePassword);
+        return Arrays.asList(btnAddPasswordPopup, btnBack, btnEditPassword, btnDeletePassword, btnUnHidePassword, btnGeneratePassword);
     }
 
     private void setupListView() {

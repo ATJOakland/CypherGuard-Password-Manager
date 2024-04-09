@@ -208,11 +208,11 @@ public class Database {
     }
 
     // Method to delete a password for a user
-    public static boolean deletePassword(String platform) {
+    public static boolean deletePassword(String platform, String username) {
         // Get current logged in user
         String loggedInUser = UserSession.getInstance().getUsername();
 
-        String query = "DELETE FROM passwords WHERE user_id = (SELECT id FROM users WHERE username = ?) AND platform = ?";
+        String query = "DELETE FROM passwords WHERE user_id = (SELECT id FROM users WHERE username = ?) AND platform = ? AND username = ?";
         try (Connection conn = DriverManager.getConnection(DB_PATH);
                 Statement stmt = conn.createStatement();
                 PreparedStatement pstmt = conn.prepareStatement(query)) {
@@ -222,6 +222,7 @@ public class Database {
 
             pstmt.setString(1, loggedInUser);
             pstmt.setString(2, platform);
+            pstmt.setString(3, username);
 
             pstmt.executeUpdate();
 

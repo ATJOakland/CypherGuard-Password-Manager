@@ -115,4 +115,35 @@ public class Key {
         }
         return bytes;
     }
+
+    //Generate a random password
+    public static String generatePassword(int length) {
+        
+        //Set min length to 8
+        if(length < 8){
+            length = 8;
+        }
+
+        final char[] lowercase = "abcdefghijklmnopqrstuvwxyz".toCharArray();
+        final char[] uppercase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".toCharArray();
+        final char[] numbers = "0123456789".toCharArray();
+        final char[] special = "!@#$%^&?".toCharArray();
+        final char[] all = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&?".toCharArray();
+
+        SecureRandom random = new SecureRandom();
+
+        StringBuilder password = new StringBuilder();
+
+        //Fill string
+        while(password.length() < length - 4){
+            password.append(all[random.nextInt(all.length)]);
+        }
+        //Guarantee at least one of each type
+        password.insert(random.nextInt(password.length()), lowercase[random.nextInt(lowercase.length)]);
+        password.insert(random.nextInt(password.length()), uppercase[random.nextInt(uppercase.length)]);
+        password.insert(random.nextInt(password.length()), numbers[random.nextInt(numbers.length)]);
+        password.insert(random.nextInt(password.length()), special[random.nextInt(special.length)]);
+
+        return password.toString();
+    }
 }
