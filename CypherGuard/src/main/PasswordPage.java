@@ -34,11 +34,24 @@ import javafx.geometry.Pos;
 public class PasswordPage extends GridPane {
     private static final int SPACING = 20;
     private static final int PADDING = 20;
-    private static final String CSS_FILE_PATH = "/resources/styles.css";
+    private static String CSS_FILE_PATH;
     private static final String ACTION_BUTTON_STYLE = "action-button";
     private static final String BACK_BUTTON_STYLE = "back-button";
     private static final String LOGIN_TITLE_STYLE = "login-title";
     private static final String TEXT_FIELD_STYLE = "text-field";
+    private static final String LIST_CELL_STYLE = "list-cell";
+
+    static {
+        try {
+            if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                CSS_FILE_PATH = "/resources/dark-styles.css";
+            } else { // light mode is on
+                CSS_FILE_PATH = "/resources/light-styles.css";
+            }
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
+    }
 
     private Stage stage;
     private ListView<Map<String, String>> passwordListView;
@@ -53,6 +66,8 @@ public class PasswordPage extends GridPane {
     private TextField txtSearch;
 
     public PasswordPage(Stage stage, Scene previousScene) {
+
+        
         this.stage = stage;
         List<Pane> layout = setupLayout();
         Pane vboxLeft = layout.get(0);
@@ -63,13 +78,13 @@ public class PasswordPage extends GridPane {
         Pane topSelectionHBox = layout.get(5);
         Pane passwordHBox = layout.get(6);
 
-        // Set a border on the VBox instances for visibility
-        vboxLeft.setStyle("-fx-border-color: red;");
-        vboxRight.setStyle("-fx-border-color: yellow;");
-        topLeftHBox.setStyle("-fx-border-color: white;");
-        topRightHBox.setStyle("-fx-border-color: white;");
-        selectionVBox.setStyle("-fx-border-color: white;");
-        topSelectionHBox.setStyle("-fx-border-color: white;");
+        //Styling for content
+        vboxLeft.getStyleClass().add("password-info-container-left");
+        vboxRight.getStyleClass().add("password-info-container-right");
+        topLeftHBox.getStyleClass().add("interest-box-container");
+        topRightHBox.getStyleClass().add("interest-box-container");
+        selectionVBox.getStyleClass().add("interest-box-container");
+        topSelectionHBox.getStyleClass().add("selected-box-container");
 
         List<Button> buttons = setupButtons(previousScene);
         Button btnAddPasswordPopup = buttons.get(0);
@@ -78,6 +93,10 @@ public class PasswordPage extends GridPane {
         Button btnDeletePassword = buttons.get(3);
         Button btnUnHidePassword = buttons.get(4);
         Button btnGeneratePassword = buttons.get(5);
+
+        btnBack.setMinWidth(75);
+        btnDeletePassword.setMinWidth(75);
+        btnEditPassword.setMinWidth(75);
 
         // Labels
         Label lblWebsite = createLabel("Website: ", "label");
@@ -96,10 +115,10 @@ public class PasswordPage extends GridPane {
         topSelectionHBox.getChildren().addAll(favicon, lblWebsiteName);
         selectionVBox.getChildren().addAll(topSelectionHBox, lblUsername, txtUsername, lblPassword, passwordHBox,
                 lblWebsite, txtUrl);
-        topRightHBox.getChildren().addAll(btnEditPassword, btnDeletePassword);
+        topRightHBox.getChildren().addAll(btnEditPassword, btnDeletePassword, btnBack);
         topLeftHBox.getChildren().addAll(txtSearch, btnAddPasswordPopup);
         vboxLeft.getChildren().addAll(topLeftHBox, passwordListView);
-        vboxRight.getChildren().addAll(topRightHBox, selectionVBox, btnBack);
+        vboxRight.getChildren().addAll(topRightHBox, selectionVBox);
 
         add(vboxLeft, 1, 0);
         add(vboxRight, 2, 0);
@@ -175,12 +194,14 @@ public class PasswordPage extends GridPane {
 
     private List<Button> setupButtons(Scene previousScene) {
 
-        Button btnAddPasswordPopup = createButton("+", ACTION_BUTTON_STYLE);
+        Button btnAddPasswordPopup = createButton("Add a Password", ACTION_BUTTON_STYLE);
         Button btnBack = createButton("Back", BACK_BUTTON_STYLE);
         Button btnEditPassword = createButton("Edit", ACTION_BUTTON_STYLE);
         Button btnDeletePassword = createButton("Delete", ACTION_BUTTON_STYLE);
         Button btnGeneratePassword = createButton("Generate Password", ACTION_BUTTON_STYLE);
         Button btnUnHidePassword = createButton("Unhide", ACTION_BUTTON_STYLE);
+
+        btnAddPasswordPopup.setMinWidth(100);
 
         btnGeneratePassword.setOnAction(generateEvent ->{
             //Add delay?
@@ -499,6 +520,12 @@ public class PasswordPage extends GridPane {
         // Add the passwords to the ListView
         passwordListView.setItems(observableList);
 
+        // Apply CSS to the ListView
+        passwordListView.getStyleClass().add("password-list-view");
+
+        // Apply CSS to the list cell items
+        
+
         // Initialize the TextField values
         txtUsername = new TextField();
         txtPassword = new TextField();
@@ -533,7 +560,10 @@ public class PasswordPage extends GridPane {
                 imageView.setFitHeight(32);
                 imageView.setFitWidth(32);
                 imageView.setPreserveRatio(true);
+                hbox.getStyleClass().add(LIST_CELL_STYLE);
             }
+
+
 
             @Override
             protected void updateItem(Map<String, String> password, boolean empty) {
@@ -618,6 +648,11 @@ public class PasswordPage extends GridPane {
 
         // Create a PauseTransition for debouncing
         PauseTransition pause = new PauseTransition(Duration.millis(200));
+
+        double textWidth = 250;
+
+        txtSearch.setPromptText("Search Saved Passwords...");
+        txtSearch.setMinWidth(textWidth);
 
         // Set the filter Predicate whenever the filter changes
         txtSearch.textProperty().addListener((observable, oldValue, newValue) -> {
