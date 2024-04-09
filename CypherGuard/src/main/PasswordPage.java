@@ -65,9 +65,12 @@ public class PasswordPage extends GridPane {
     private Label lblWebsiteName;
     private TextField txtSearch;
 
+    private String originalPassword;
+    private String hiddenPassword;
+    private String originalUsername;
+
     public PasswordPage(Stage stage, Scene previousScene) {
 
-        
         this.stage = stage;
         List<Pane> layout = setupLayout();
         Pane vboxLeft = layout.get(0);
@@ -78,7 +81,7 @@ public class PasswordPage extends GridPane {
         Pane topSelectionHBox = layout.get(5);
         Pane passwordHBox = layout.get(6);
 
-        //Styling for content
+        // Styling for content
         vboxLeft.getStyleClass().add("password-info-container-left");
         vboxRight.getStyleClass().add("password-info-container-right");
         topLeftHBox.getStyleClass().add("interest-box-container");
@@ -93,6 +96,7 @@ public class PasswordPage extends GridPane {
         Button btnDeletePassword = buttons.get(3);
         Button btnUnHidePassword = buttons.get(4);
         Button btnGeneratePassword = buttons.get(5);
+        Button btnCancel = buttons.get(6);
 
         btnBack.setMinWidth(75);
         btnDeletePassword.setMinWidth(75);
@@ -110,12 +114,18 @@ public class PasswordPage extends GridPane {
         // Search bar
         setupSearchBar();
 
+        // Lock text fields
+        txtUsername.setEditable(false);
+        txtPassword.setEditable(false);
+        txtUrl.setEditable(false);
+        btnCancel.setVisible(false);
+
         passwordListView.getSelectionModel().selectFirst();
-        passwordHBox.getChildren().addAll(txtPassword, btnGeneratePassword, btnUnHidePassword);
+        passwordHBox.getChildren().addAll(txtPassword, btnUnHidePassword);
         topSelectionHBox.getChildren().addAll(favicon, lblWebsiteName);
         selectionVBox.getChildren().addAll(topSelectionHBox, lblUsername, txtUsername, lblPassword, passwordHBox,
                 lblWebsite, txtUrl);
-        topRightHBox.getChildren().addAll(btnEditPassword, btnDeletePassword, btnBack);
+        topRightHBox.getChildren().addAll(btnCancel, btnEditPassword, btnGeneratePassword, btnDeletePassword, btnBack);
         topLeftHBox.getChildren().addAll(txtSearch, btnAddPasswordPopup);
         vboxLeft.getChildren().addAll(topLeftHBox, passwordListView);
         vboxRight.getChildren().addAll(topRightHBox, selectionVBox);
@@ -148,9 +158,11 @@ public class PasswordPage extends GridPane {
 
         VBox vboxRight = new VBox(SPACING);
         HBox topRightHBox = new HBox(SPACING);
+
         VBox selectionVBox = new VBox(SPACING);
-        HBox passwordHBox = new HBox(SPACING);
         HBox topSelectionHBox = new HBox(SPACING);
+
+        HBox passwordHBox = new HBox(SPACING);
 
         topLeftHBox.setAlignment(Pos.CENTER);
         topRightHBox.setAlignment(Pos.CENTER_RIGHT);
@@ -165,12 +177,13 @@ public class PasswordPage extends GridPane {
 
         selectionVBox.setAlignment(Pos.CENTER_LEFT);
         topSelectionHBox.setAlignment(Pos.CENTER_LEFT);
-        passwordHBox.setAlignment(Pos.CENTER_RIGHT);
+        passwordHBox.setAlignment(Pos.CENTER_LEFT);
 
         // Set the title of the view passwords window
         stage.setTitle("CypherGuard - View Passwords");
 
-        return Arrays.asList(vboxLeft, vboxRight, topLeftHBox, topRightHBox, selectionVBox, topSelectionHBox, passwordHBox);
+        return Arrays.asList(vboxLeft, vboxRight, topLeftHBox, topRightHBox, selectionVBox, topSelectionHBox,
+                passwordHBox);
     }
 
     private Button createButton(String text, String styleClass) {
@@ -198,156 +211,39 @@ public class PasswordPage extends GridPane {
         Button btnBack = createButton("Back", BACK_BUTTON_STYLE);
         Button btnEditPassword = createButton("Edit", ACTION_BUTTON_STYLE);
         Button btnDeletePassword = createButton("Delete", ACTION_BUTTON_STYLE);
-        Button btnGeneratePassword = createButton("Generate Password", ACTION_BUTTON_STYLE);
+        Button btnGeneratePassword = createButton("Generate", ACTION_BUTTON_STYLE);
         Button btnUnHidePassword = createButton("Unhide", ACTION_BUTTON_STYLE);
+        Button btnCancel = createButton("Cancel", BACK_BUTTON_STYLE);
 
         btnAddPasswordPopup.setMinWidth(100);
 
-        btnGeneratePassword.setOnAction(generateEvent ->{
-            //Add delay?
-            txtPassword.clear();
-            String generatedPassword = Key.generatePassword(12);
-            txtPassword.setText(generatedPassword);
-            
-            String encrypted = null;
-
-            //Add new password to database
-            try{
-                encrypted = AES.encrypt(generatedPassword, Key.deriveKey(Database.getMaster(UserSession.getInstance().getUsername()), Database.getSalt(UserSession.getInstance().getUsername())));
-            }
-            catch (Exception e) {
-                System.out.println("Error encrypting password: " + e.getMessage());
-            }
-            Database.updatePassword(txtUrl.getText(), encrypted);
-        });
-
-        btnEditPassword.setOnAction(editEvent -> {
-            if (btnEditPassword.getText().equals("Edit")) {
-                // Make test text fields editable
-                txtUsername.setEditable(true);
-                txtPassword.setEditable(true);
-                txtUrl.setEditable(true);
-
-                btnEditPassword.setText("Save");
-            } else {
-                txtUsername.setEditable(false);
-                txtPassword.setEditable(false);
-                txtUrl.setEditable(false);
-                btnEditPassword.setText("Edit");
-
-                // Create a new ConfirmMasterPasswordPopup
-                Stage popupStage = new Stage();
-
-                // Create layout for popup
-                VBox popupLayout = new VBox(SPACING);
-                popupLayout.setAlignment(Pos.CENTER);
-                popupLayout.setPadding(new Insets(PADDING));
-
-                // Buttons
-                Button btnConfirm = createButton("Confirm", ACTION_BUTTON_STYLE);
-                Button btnClose = createButton("Back", BACK_BUTTON_STYLE);
-
-                // Text Fields
-                TextField txtConfirmMaster = createTextField("", TEXT_FIELD_STYLE);
-
-                // Label
-                Label lblConfirmMaster = createLabel("Confirm master password", LOGIN_TITLE_STYLE);
-
-                // Set the title of the view passwords window
-                popupStage.setTitle("CypherGuard - Confirm Master Password");
-
-                // Add components to the popup layout
-                popupLayout.getChildren().addAll(lblConfirmMaster, txtConfirmMaster, btnConfirm, btnClose);
-
-                Scene popupScene = new Scene(popupLayout, 400, 400);
-                popupScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
-                popupStage.setScene(popupScene);
-
-                popupStage.show();
-
-                btnConfirm.setOnAction(confirmEvent -> {
-                    String currentUser = UserSession.getInstance().getUsername();
-                    String inputMaster = txtConfirmMaster.getText();
-                    Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser),
-                            Database.getSalt(currentUser));
-
-                    if (isAuthenticated == null) {
-                        Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect master password.");
-                        alert.showAndWait();
-                        return;
-                    }
-                    String user = UserSession.getInstance().getUsername();
-                    String encryptedPassword = "";
-
-                    // Encrypt the password
-                    try {
-                        String key = Key.deriveKey(Database.getMaster(user), Database.getSalt(user));
-                        encryptedPassword = AES.encrypt(txtPassword.getText(), key);
-                    } catch (Exception e) {
-                        System.out.println("Error decrypting password: " + e.getMessage());
-                    }
-
-                    boolean isUpdated = Database.updatePassword(txtUrl.getText(), encryptedPassword);
-                    isUpdated = Database.updateUsername(txtUrl.getText(), txtUsername.getText());
-
-                    if (isUpdated) {
-                        Alert alert = new Alert(Alert.AlertType.INFORMATION, "Credentials updated successfully!");
-                        alert.showAndWait();
-                        // Clear the obersvable list
-                        observableList.clear();
-                        // Repopulate with udpated data
-                        passwords = Database.getUserPasswords();
-                        observableList.addAll(passwords);
-                        // Select the first item in the ListView
-                        passwordListView.getSelectionModel().selectFirst();
-
-                    } else {
-                        // Show error alert
-                        Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to update credentials.");
-                        alert.showAndWait();
-                    }
-                    // Close the confirm master stage
-                    popupStage.close();
-                });
-
-                btnClose.setOnAction(closePopUpEvent -> {
-                    // Close the confirm master stage
-                    popupStage.close();
-                });
+        btnUnHidePassword.setOnAction(unhideEvent -> {
+            if (btnUnHidePassword.getText().equals("Unhide")) {
+                txtPassword.setText(originalPassword);
+                btnUnHidePassword.setText("Hide");
+            } else if (btnUnHidePassword.getText().equals("Hide")) {
+                txtPassword.setText(hiddenPassword);
+                btnUnHidePassword.setText("Unhide");
             }
         });
 
-        btnDeletePassword.setOnAction(deleteEvent -> {
+        btnCancel.setOnAction(cancelEvent -> {
+            txtPassword.setText(hiddenPassword);
+            txtUsername.setText(originalUsername);
+            btnEditPassword.setText("Edit");
+            btnCancel.setVisible(false);
+            btnUnHidePassword.setText("Unhide");
+            btnUnHidePassword.setVisible(true);
+        });
 
-            // Create a new DeletePasswordPopup
-            Stage popupStage = new Stage();
+        btnGeneratePassword.setOnAction(generateEvent -> {
 
-            // Create layout for popup
-            VBox popupLayout = new VBox(SPACING);
-            popupLayout.setAlignment(Pos.CENTER);
-            popupLayout.setPadding(new Insets(PADDING));
+            // Confirm master password before allowing to edit
+            Map<String, Object> components = setupPopup("confirm");
 
-            // Buttons
-            Button btnConfirm = createButton("Confirm", ACTION_BUTTON_STYLE);
-            Button btnClose = createButton("Back", BACK_BUTTON_STYLE);
-
-            // Text Fields
-            TextField txtConfirmMaster = createTextField("", TEXT_FIELD_STYLE);
-
-            // Label
-            Label lblConfirmMaster = createLabel("Confirm master password", LOGIN_TITLE_STYLE);
-
-            // Set the title of the view passwords window
-            popupStage.setTitle("CypherGuard - Confirm Master Password");
-
-            // Add components to the popup layout
-            popupLayout.getChildren().addAll(lblConfirmMaster, txtConfirmMaster, btnConfirm, btnClose);
-
-            Scene popupScene = new Scene(popupLayout, 400, 400);
-            popupScene.getStylesheets().add(getClass().getResource("/resources/styles.css").toExternalForm());
-            popupStage.setScene(popupScene);
-
-            popupStage.show();
+            Button btnConfirm = (Button) components.get("btnConfirm");
+            TextField txtConfirmMaster = (TextField) components.get("txtConfirmMaster");
+            Stage popupStage = (Stage) components.get("popupStage");
 
             btnConfirm.setOnAction(confirmEvent -> {
                 String currentUser = UserSession.getInstance().getUsername();
@@ -355,7 +251,162 @@ public class PasswordPage extends GridPane {
                 Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser),
                         Database.getSalt(currentUser));
 
-                if (isAuthenticated == null) {
+                if (isAuthenticated == false) {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect master password.");
+                    alert.showAndWait();
+                    return;
+                }
+                popupStage.close();
+
+                // Open the genrate password popup
+                Map<String, Object> generateComponents = setupPopup("generate");
+                Button btnGenerate = (Button) generateComponents.get("btnGenerate");
+                Button btnConfirmGenerated = (Button) generateComponents.get("btnConfirmGenerated");
+                TextField txtLength = (TextField) generateComponents.get("txtLength");
+                TextField txtGeneratedPassword = (TextField) generateComponents.get("txtGeneratedPassword");
+                Stage generatePopupStage = (Stage) generateComponents.get("popupStage");
+
+                // Prevent non-numeric input in txtLength
+                txtLength.textProperty().addListener((observable, oldValue, newValue) -> {
+                    if (!newValue.matches("\\d*")) {
+                        txtLength.setText(newValue.replaceAll("[^\\d]", ""));
+                    }
+                });
+
+                btnGenerate.setOnAction(generateNewEvent -> {
+                    int length = 0;
+                    if (!txtLength.getText().isEmpty()) {
+                        length = Integer.parseInt(txtLength.getText());
+                    }
+
+                    if (length < 14) {
+                        Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                                "A password is recommended to be at least 14 characters long!");
+                        alert.showAndWait();
+                        return;
+                    }
+
+                    String generatedPassword = Key.generatePassword(length);
+                    txtGeneratedPassword.setText(generatedPassword);
+                });
+
+                btnConfirmGenerated.setOnAction(confirmGeneratedEvent -> {
+                    if (txtGeneratedPassword.getText().isEmpty()) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Please generate a password first.");
+                        alert.showAndWait();
+                        return;
+                    }
+
+                    txtPassword.setText(txtGeneratedPassword.getText());
+                    btnUnHidePassword.setText("Hide");
+
+                    String encrypted = null;
+
+                    // Add new password to database
+                    try {
+                        encrypted = AES.encrypt(txtGeneratedPassword.getText(),
+                                Key.deriveKey(Database.getMaster(UserSession.getInstance().getUsername()),
+                                        Database.getSalt(UserSession.getInstance().getUsername())));
+                    } catch (Exception e) {
+                        System.out.println("Error encrypting password: " + e.getMessage());
+                    }
+                    Database.updatePassword(txtUrl.getText(), encrypted);
+
+                    generatePopupStage.close();
+                });
+            });
+        });
+
+        btnEditPassword.setOnAction(editEvent -> {
+            if (btnEditPassword.getText().equals("Edit")) {
+
+                // Confirm master password before allowing to edit
+                Map<String, Object> components = setupPopup("confirm");
+
+                Button btnConfirm = (Button) components.get("btnConfirm");
+                TextField txtConfirmMaster = (TextField) components.get("txtConfirmMaster");
+                Stage popupStage = (Stage) components.get("popupStage");
+
+                btnConfirm.setOnAction(confirmEvent -> {
+                    String currentUser = UserSession.getInstance().getUsername();
+                    String inputMaster = txtConfirmMaster.getText();
+                    Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser),
+                            Database.getSalt(currentUser));
+
+                    if (isAuthenticated == false) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect master password.");
+                        alert.showAndWait();
+                        return;
+                    }
+                    // Close the confirm master stage
+                    popupStage.close();
+
+                    txtUsername.setEditable(true);
+                    txtPassword.setEditable(true);
+                    txtPassword.setText(originalPassword);
+                    btnEditPassword.setText("Save");
+                    btnCancel.setVisible(true);
+                    btnUnHidePassword.setText("Hide");
+                    btnUnHidePassword.setVisible(false);
+                });
+            } else if (btnEditPassword.getText().equals("Save")) {
+
+                txtUsername.setEditable(false);
+                txtPassword.setEditable(false);
+                //Get input and hide it
+                String input = txtPassword.getText();
+                txtPassword.setText(input.replaceAll(".", "*"));
+
+                btnEditPassword.setText("Edit");
+                btnCancel.setVisible(false);
+                btnUnHidePassword.setVisible(true);
+
+                // Encrypt the password
+                String currentUser = UserSession.getInstance().getUsername();
+                String encryptedPassword = null;
+
+                try {
+                    String key = Key.deriveKey(Database.getMaster(currentUser), Database.getSalt(currentUser));
+                    encryptedPassword = AES.encrypt(input, key);
+                } catch (Exception e) {
+                    System.out.println("Error decrypting password: " + e.getMessage());
+                }
+
+                boolean isUpdated = Database.updatePassword(txtUrl.getText(), encryptedPassword);
+                isUpdated = Database.updateUsername(txtUrl.getText(), txtUsername.getText());
+
+                if (isUpdated) {
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION, "Credentials updated successfully!");
+                    alert.showAndWait();
+                    // Clear the obersvable list
+                    observableList.clear();
+                    // Repopulate with udpated data
+                    passwords = Database.getUserPasswords();
+                    observableList.addAll(passwords);
+                    // Select the first item in the ListView
+                    passwordListView.getSelectionModel().selectFirst();
+                } else {
+                    Alert alert = new Alert(Alert.AlertType.ERROR, "Failed to update credentials.");
+                    alert.showAndWait();
+                }
+            }
+        });
+
+        btnDeletePassword.setOnAction(deleteEvent -> {
+
+            Map<String, Object> components = setupPopup("confirm");
+
+            Button btnConfirm = (Button) components.get("btnConfirm");
+            TextField txtConfirmMaster = (TextField) components.get("txtConfirmMaster");
+            Stage popupStage = (Stage) components.get("popupStage");
+
+            btnConfirm.setOnAction(confirmEvent -> {
+                String currentUser = UserSession.getInstance().getUsername();
+                String inputMaster = txtConfirmMaster.getText();
+                Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser),
+                        Database.getSalt(currentUser));
+
+                if (isAuthenticated == false) {
                     Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect master password.");
                     alert.showAndWait();
                     return;
@@ -384,10 +435,6 @@ public class PasswordPage extends GridPane {
                 popupStage.close();
             });
 
-            btnClose.setOnAction(closePopUpEvent -> {
-                // Close the confirm master stage
-                popupStage.close();
-            });
         });
 
         btnBack.setOnAction(backEvent -> {
@@ -397,52 +444,12 @@ public class PasswordPage extends GridPane {
 
         btnAddPasswordPopup.setOnAction(openPopUpEvent -> {
 
-            // Create a new AddPasswordPopup
-            Stage popupStage = new Stage();
+            Map<String, Object> components = setupPopup("add");
 
-            // Create layout for popup
-            VBox popupLayout = new VBox(SPACING);
-            popupLayout.setAlignment(Pos.CENTER);
-            popupLayout.setPadding(new Insets(PADDING));
-
-            // Buttons
-            Button btnSave = createButton("Save Password", ACTION_BUTTON_STYLE);
-            Button btnClose = createButton("Back", BACK_BUTTON_STYLE);
-
-            // Text Fields
-            TextField txtWebsiteName = createTextField("Enter the Wesbite's name...", TEXT_FIELD_STYLE);
-            TextField txtAddedUserName = createTextField("Enter your Username...", TEXT_FIELD_STYLE);
-            TextField txtAddedPassword = createTextField("Enter your Password...", TEXT_FIELD_STYLE);
-
-            // Create a label for the view passwords title
-            Label lblViewPasswordsTitle = createLabel("Add a new password", LOGIN_TITLE_STYLE);
-
-            // Set the title of the view passwords window
-            popupStage.setTitle("CypherGuard - Add a new Password");
-
-            // Add components to the popup layout
-            popupLayout.getChildren().addAll(lblViewPasswordsTitle, txtWebsiteName, txtAddedUserName, txtAddedPassword,
-                    btnSave, btnClose);
-
-            Scene popupScene = new Scene(popupLayout, 400, 400);
-
-            try {
-
-                if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
-                    popupScene.getStylesheets()
-                            .add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
-                    popupStage.setScene(popupScene);
-                } else { // light mode is on
-                    popupScene.getStylesheets()
-                            .add(getClass().getResource("/resources/light-styles.css").toExternalForm());
-                    popupStage.setScene(popupScene);
-                }
-
-            } catch (Exception e) {
-                System.err.println("Failed to load CSS file: " + e.getMessage());
-            }
-
-            popupStage.show();
+            Button btnSave = (Button) components.get("btnSave");
+            TextField txtWebsiteName = (TextField) components.get("txtWebsiteName");
+            TextField txtAddedUserName = (TextField) components.get("txtAddedUserName");
+            TextField txtAddedPassword = (TextField) components.get("txtAddedPassword");
 
             btnSave.setOnAction(saveInputevent -> {
 
@@ -501,14 +508,10 @@ public class PasswordPage extends GridPane {
                     alert.showAndWait();
                 }
             });
-
-            btnClose.setOnAction(closePopUpEvent -> {
-                // Close the view passwords stage
-                popupStage.close();
-            });
         });
 
-        return Arrays.asList(btnAddPasswordPopup, btnBack, btnEditPassword, btnDeletePassword, btnUnHidePassword, btnGeneratePassword);
+        return Arrays.asList(btnAddPasswordPopup, btnBack, btnEditPassword, btnDeletePassword, btnUnHidePassword,
+                btnGeneratePassword, btnCancel);
     }
 
     private void setupListView() {
@@ -523,9 +526,6 @@ public class PasswordPage extends GridPane {
         // Apply CSS to the ListView
         passwordListView.getStyleClass().add("password-list-view");
 
-        // Apply CSS to the list cell items
-        
-
         // Initialize the TextField values
         txtUsername = new TextField();
         txtPassword = new TextField();
@@ -536,16 +536,16 @@ public class PasswordPage extends GridPane {
         txtUsername.setEditable(false);
         txtPassword.setEditable(false);
         txtUrl.setEditable(false);
+        txtPassword.setPrefWidth(380);
 
         Map<String, Image> faviconCache = new HashMap<>();
 
-        //Pre-load the favicons
-        for (Map<String, String> password: observableList) {
+        // Pre-load the favicons
+        for (Map<String, String> password : observableList) {
             String faviconUrl = "https://logo.clearbit.com/" + password.get("platform") + "?size=180";
             Image image = new Image(faviconUrl, true);
             faviconCache.put(password.get("platform"), image);
         }
-
 
         // Cell factory to accomodate favicons and labels
         passwordListView.setCellFactory(lv -> new ListCell<>() {
@@ -563,15 +563,12 @@ public class PasswordPage extends GridPane {
                 hbox.getStyleClass().add(LIST_CELL_STYLE);
             }
 
-
-
             @Override
             protected void updateItem(Map<String, String> password, boolean empty) {
                 super.updateItem(password, empty);
                 if (empty || password == null) {
                     setGraphic(null);
-                } 
-                else {
+                } else {
                     String websiteName = password.get("platform");
                     if (websiteName.startsWith("www.")) {
                         websiteName = websiteName.replaceFirst("^www\\.", "");
@@ -604,6 +601,7 @@ public class PasswordPage extends GridPane {
         passwordListView.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> {
             if (newSelection != null) {
                 txtUsername.setText(newSelection.get("username"));
+                originalUsername = newSelection.get("username");
 
                 String user = UserSession.getInstance().getUsername();
                 String decryptedPassword = "Error decrypting password";
@@ -614,7 +612,12 @@ public class PasswordPage extends GridPane {
                 } catch (Exception e) {
                     System.out.println("Error decrypting password: " + e.getMessage());
                 }
-                txtPassword.setText(decryptedPassword);
+
+                originalPassword = decryptedPassword;
+                //Hide the password
+                hiddenPassword = decryptedPassword.replaceAll(".", "*");
+                txtPassword.setText(hiddenPassword);
+
                 txtUrl.setText(newSelection.get("platform"));
 
                 String websiteName = newSelection.get("platform");
@@ -680,5 +683,120 @@ public class PasswordPage extends GridPane {
 
         // Add sorted/filtered data to the table
         passwordListView.setItems(filteredData);
+    }
+
+    private Map<String, Object> setupPopup(String type) {
+        Stage popupStage = new Stage();
+        Map<String, Object> components = new HashMap<>();
+
+        // Create layout for popup
+        VBox popupLayout = new VBox(SPACING);
+        popupLayout.setAlignment(Pos.CENTER);
+        popupLayout.setPadding(new Insets(PADDING));
+
+        // Always create back button
+        Button btnClose = createButton("Back", BACK_BUTTON_STYLE);
+
+        // Include popupStage incase of alternative exit
+        components.put("popupStage", popupStage);
+
+        switch (type) {
+            case "add":
+                // Buttons
+                Button btnSave = createButton("Save Password", ACTION_BUTTON_STYLE);
+
+                // Text Fields
+                TextField txtWebsiteName = createTextField("Enter the Wesbite's name...", TEXT_FIELD_STYLE);
+                TextField txtAddedUserName = createTextField("Enter your Username...", TEXT_FIELD_STYLE);
+                TextField txtAddedPassword = createTextField("Enter your Password...", TEXT_FIELD_STYLE);
+
+                // Create a label for the view passwords title
+                Label lblViewPasswordsTitle = createLabel("Add a new password", LOGIN_TITLE_STYLE);
+
+                // Set the title of the view passwords window
+                popupStage.setTitle("CypherGuard - Add a new Password");
+
+                // Add components to the popup layout
+                popupLayout.getChildren().addAll(lblViewPasswordsTitle, txtWebsiteName, txtAddedUserName,
+                        txtAddedPassword,
+                        btnSave, btnClose);
+
+                // Add componenets to the map
+                components.put("btnSave", btnSave);
+                components.put("txtWebsiteName", txtWebsiteName);
+                components.put("txtAddedUserName", txtAddedUserName);
+                components.put("txtAddedPassword", txtAddedPassword);
+
+                break;
+
+            case "confirm":
+
+                // Buttons
+                Button btnConfirm = createButton("Confirm", ACTION_BUTTON_STYLE);
+
+                // Text Fields
+                TextField txtConfirmMaster = createTextField("", TEXT_FIELD_STYLE);
+
+                // Label
+                Label lblConfirmMaster = createLabel("Confirm master password", LOGIN_TITLE_STYLE);
+
+                // Set the title of the view passwords window
+                popupStage.setTitle("CypherGuard - Confirm Master Password");
+
+                // Add components to the popup layout
+                popupLayout.getChildren().addAll(lblConfirmMaster, txtConfirmMaster, btnConfirm, btnClose);
+
+                // Add componenets to the map
+                components.put("btnConfirm", btnConfirm);
+                components.put("txtConfirmMaster", txtConfirmMaster);
+
+                break;
+
+            case "generate":
+
+                Button btnGenerate = createButton("Generate", ACTION_BUTTON_STYLE);
+                Button btnConfirmGenerated = createButton("Confirm", ACTION_BUTTON_STYLE);
+                TextField txtLength = createTextField("Minimum length of 8 characters...", TEXT_FIELD_STYLE);
+                Label lblLength = createLabel("Desired password length", LOGIN_TITLE_STYLE);
+                Label lblGeneratedPassword = createLabel("Generated Password", LOGIN_TITLE_STYLE);
+                TextField txtGeneratedPassword = createTextField("", TEXT_FIELD_STYLE);
+
+                // Set the title of the view passwords window
+                popupStage.setTitle("CypherGuard - Generate New Password");
+                popupLayout.getChildren().addAll(lblLength, txtLength, lblGeneratedPassword, txtGeneratedPassword,
+                        btnGenerate, btnConfirmGenerated, btnClose);
+
+                components.put("btnConfirmGenerated", btnConfirmGenerated);
+                components.put("txtLength", txtLength);
+                components.put("txtGeneratedPassword", txtGeneratedPassword);
+                components.put("btnGenerate", btnGenerate);
+        }
+
+        Scene popupScene = new Scene(popupLayout, 500, 500);
+
+        try {
+
+            if (CypherGuard.isLightModeEnabled(CypherGuard.class) == false) {
+                popupScene.getStylesheets()
+                        .add(getClass().getResource("/resources/dark-styles.css").toExternalForm());
+                popupStage.setScene(popupScene);
+            } else { // light mode is on
+                popupScene.getStylesheets()
+                        .add(getClass().getResource("/resources/light-styles.css").toExternalForm());
+                popupStage.setScene(popupScene);
+            }
+
+        } catch (Exception e) {
+            System.err.println("Failed to load CSS file: " + e.getMessage());
+        }
+
+        btnClose.setOnAction(closePopUpEvent -> {
+            // Close the view passwords stage
+            popupStage.close();
+        });
+
+        popupStage.show();
+
+        return components;
     }
 }
