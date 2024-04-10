@@ -59,12 +59,10 @@ public class ProfilePage extends VBox {
         stage.setTitle("CypherGuard - Profile View");
 
         // Labels for user info
-        Label lblUsername = new Label("Username: KanyeBest123");
-        Label lblEmail = new Label("Email: KanyeBest123@gmail.com");
-        Label lblMembershipStatus = new Label("Membership Status: Free-Trial");
-        Label lblUserPassword = new Label("Password: ****************");
+        Label lblUsername = new Label("Username: admin");
+        Label lblMembershipStatus = new Label("Membership Status: Administrator");
+        Label lblUserPassword = new Label("Password: ********");
         lblUsername.getStyleClass().add("profile-label");
-        lblEmail.getStyleClass().add("profile-label");
         lblMembershipStatus.getStyleClass().add("profile-label");
         lblUserPassword.getStyleClass().add("profile-label");
 
@@ -104,12 +102,11 @@ public class ProfilePage extends VBox {
  
          // Set Standard width for each profile label
          lblUsername.setMinWidth(labelWidth);
-         lblEmail.setMinWidth(labelWidth);
          lblUserPassword.setMinWidth(labelWidth);
          lblMembershipStatus.setMinWidth(labelWidth);
 
         // Create VBox for user info
-        VBox userInfoBox = new VBox(20, lblUsername, lblEmail, lblUserPassword, lblMembershipStatus);
+        VBox userInfoBox = new VBox(20, lblUsername, lblUserPassword, lblMembershipStatus);
         userInfoBox.getStyleClass().add("profile-info-container");
 
         // Create VBox for user actions
