@@ -12,6 +12,9 @@ public class AESTest {
         String small = "Hello!";
         String medium = "Hello, World! Hello, World! Hello, World!";
         String large = "a".repeat(1000);
+        String numbers = "1234567890";
+        String ascii = "!#$%&*";
+        
         String key = "000102030405060708090a0b0c0d0e0f000102030405060708090a0b0c0d0e0f";
 
         String encryptedSmall = AES.encrypt(small, key);
@@ -20,6 +23,10 @@ public class AESTest {
         System.out.println(encryptedMedium);
         String encryptedLarge = AES.encrypt(large, key);
         System.out.println(encryptedLarge);
+        String encryptedNumbers = AES.encrypt(numbers, key);
+        System.out.println(encryptedNumbers);
+        String encryptedAscii = AES.encrypt(ascii, key);
+        System.out.println(encryptedAscii);
 
         //Size should be (inputlength + 12(iv) + 16(tag)) * 2 (convert to hexadecimal)
         assertEquals(68, encryptedSmall.length(),
@@ -28,6 +35,10 @@ public class AESTest {
                 "Encrypted text should be 138 characters long (69 bytes in hexadecimal)");
         assertEquals(2056, encryptedLarge.length(),
                 "Encrypted text should be 2056 characters long (1028 bytes in hexadecimal)");
+        assertEquals(76, encryptedNumbers.length(), 
+                "Encrypted text should be 76 characters long (1028 bytes in hexadecimal)");
+        assertEquals(68, encryptedAscii.length(), 
+                "Encrypted text should be 68 characters long (1028 bytes in hexadecimal)");
     }
 
     @Test
