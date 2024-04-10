@@ -154,7 +154,9 @@ public class Database {
     }
 
     // Method to update an existing password for a user
-    public static boolean updatePassword(String platform, String password, String username) {
+    public static boolean updatePassword(String platform, String password) {
+        // Get current logged in user
+        String loggedInUser = UserSession.getInstance().getUsername();
 
         String query = "UPDATE passwords SET password = ? WHERE user_id = (SELECT id FROM users WHERE username = ?) AND platform = ?";
         try (Connection conn = DriverManager.getConnection(DB_PATH);
@@ -165,7 +167,7 @@ public class Database {
             stmt.execute("PRAGMA foreign_keys = ON;");
 
             pstmt.setString(1, password);
-            pstmt.setString(2, username);
+            pstmt.setString(2, loggedInUser);
             pstmt.setString(3, platform);
 
             pstmt.executeUpdate();

@@ -310,7 +310,7 @@ public class PasswordPage extends GridPane {
                     } catch (Exception e) {
                         System.out.println("Error encrypting password: " + e.getMessage());
                     }
-                    Database.updatePassword(txtUrl.getText(), encrypted, txtUsername.getText());
+                    Database.updatePassword(txtUrl.getText(), encrypted);
 
                     generatePopupStage.close();
                 });
@@ -372,7 +372,7 @@ public class PasswordPage extends GridPane {
                     System.out.println("Error decrypting password: " + e.getMessage());
                 }
 
-                boolean isUpdated = Database.updatePassword(txtUrl.getText(), encryptedPassword, txtUsername.getText());
+                boolean isUpdated = Database.updatePassword(txtUrl.getText(), encryptedPassword);
                 isUpdated = Database.updateUsername(txtUrl.getText(), txtUsername.getText());
 
                 if (isUpdated) {
