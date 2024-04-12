@@ -219,6 +219,26 @@ public class PasswordPage extends GridPane {
 
         btnUnHidePassword.setOnAction(unhideEvent -> {
             if (btnUnHidePassword.getText().equals("Unhide")) {
+
+                Map<String, Object> components = setupPopup("confirm");
+                Button btnConfirm = (Button) components.get("btnConfirm");
+                TextField txtConfirmMaster = (TextField) components.get("txtConfirmMaster");
+                Stage popupStage = (Stage) components.get("popupStage");
+    
+                btnConfirm.setOnAction(confirmEvent -> {
+                    String currentUser = UserSession.getInstance().getUsername();
+                    String inputMaster = txtConfirmMaster.getText();
+                    Boolean isAuthenticated = Key.authenticate(inputMaster, Database.getMaster(currentUser),
+                            Database.getSalt(currentUser));
+    
+                    if (isAuthenticated == false) {
+                        Alert alert = new Alert(Alert.AlertType.ERROR, "Incorrect master password.");
+                        alert.showAndWait();
+                        return;
+                    }
+                    popupStage.close();
+                });
+                    
                 txtPassword.setText(originalPassword);
                 btnUnHidePassword.setText("Hide");
             } else if (btnUnHidePassword.getText().equals("Hide")) {
@@ -614,7 +634,7 @@ public class PasswordPage extends GridPane {
                 }
 
                 originalPassword = decryptedPassword;
-                //Hide the password
+                // Hide the password
                 hiddenPassword = decryptedPassword.replaceAll(".", "*");
                 txtPassword.setText(hiddenPassword);
 
